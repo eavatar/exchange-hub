@@ -9,8 +9,6 @@ import sys
 import gevent
 from gevent import pywsgi
 
-from gevent import monkey
-monkey.patch_all()
 
 from eavatar.hub.app import api
 import eavatar.hub.routes
@@ -48,4 +46,5 @@ class Launcher(object):
 
 if __name__ == "__main__":
     launcher = Launcher()
-    launcher.run()
+    srv = gevent.spawn(launcher.run)
+    gevent.joinall([srv])

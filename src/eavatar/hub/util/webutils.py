@@ -9,7 +9,7 @@ try:
     from urllib2 import parse_http_list as _parse_list_header
 except ImportError: # pragma: no cover
     from urllib.request import parse_http_list as _parse_list_header
-from ava.util import resource_path
+from eavatar.hub.util import resource_path
 
 
 static_folder = resource_path('static')
@@ -28,7 +28,7 @@ _ext_to_media_type = {
     '.json': 'application/json',
 }
 
-_default_media_type = 'application/octet-stream'
+_default_media_type = b'application/octet-stream'
 
 
 def calc_etag(content):
@@ -42,21 +42,25 @@ def send_static_file(req, resp, path, media_type=None):
     logger.debug("Gets file %s", path)
     if not os.path.exists(path):
         resp.status = falcon.HTTP_404
-        resp.body = "<html><body>File Not Found.</body></html>"
+        resp.body = b"<html><body>File Not Found.</body></html>"
         return
+
     filename, ext = os.path.splitext(path)
     if media_type is None:
         media_type = guess_media_type(ext)
     resp.content_type = media_type
+    #logger.debug("Media type: %s", media_type)
 
     data = open(path, 'rb').read()
     etag = req.if_none_match
     expected_etag = calc_etag(data)
+    #logger.debug("ETag: %s", expected_etag)
 
     if etag and etag == expected_etag:
         resp.status = falcon.HTTP_304
         return
 
+    #logger.debug("Data len: %d", len(data))
     resp.data = data
     resp.status = falcon.HTTP_200
     resp.etag = expected_etag

@@ -12,9 +12,9 @@ def resource_path(relative):
     if hasattr(sys, "_MEIPASS"):
         return os.path.join(sys._MEIPASS, relative)
 
-    abspath = os.path.abspath(os.path.join(__file__, "..", ".."))
+    abspath = os.path.abspath(os.path.join(__file__, "..", "..", ".."))
     abspath = os.path.dirname(abspath)
-    #print("abspath: ", abspath)
+    print("abspath: ", abspath)
     return os.path.join(abspath, relative)
 
 
@@ -24,7 +24,7 @@ def base_path():
         return sys._MEIPASS
     else:
         # assumes this file is located at src/eavatar/util/__init__.py
-        abspath = os.path.abspath(os.path.join(__file__, "..", ".."))
+        abspath = os.path.abspath(os.path.join(__file__, "..", "..", ".."))
         abspath = os.path.dirname(abspath)
         return abspath
 
@@ -35,5 +35,5 @@ def is_frozen():
     """
     return hasattr(sys, "frozen")
 
-if __name__=='__main__':
+if __name__ == '__main__':
     print resource_path('test')

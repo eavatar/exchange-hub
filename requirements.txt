@@ -1,4 +1,5 @@
 base58
+blist
 cassandra-driver
 coverage==3.7.1
 cqlengine
