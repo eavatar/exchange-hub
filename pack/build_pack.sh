@@ -1,5 +1,8 @@
 #!/bin/sh
 echo $(pwd)
-python pyinstdev/pyinstaller.py pack/package.spec --clean -y
+. env/dev/bin/activate; python pyinstdev/pyinstaller.py pack/package.spec --clean -y
+
+cp pack/Dockerfile dist/
+docker build -t eavatartech/hub dist
 
 

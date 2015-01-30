@@ -17,7 +17,6 @@ elif sys.platform.startswith('darwin'):
 else:
     ext_name = ''
 
-
 a = Analysis([os.path.join(app_path,'ava.py')],
              pathex=['src'],
              hiddenimports=hiddenimports,
@@ -38,7 +37,7 @@ exe = EXE(pyz,
           name=os.path.join('build', 'pyi.'+sys.platform, 'server', exe_name),
           debug=False,
           strip=False,
-          upx=False,
+          upx=True,
           icon= os.path.join(app_path, 'media/eavatar.ico'),
           console=True )
 
