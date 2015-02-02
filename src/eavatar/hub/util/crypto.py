@@ -10,6 +10,8 @@ import libnacl.secret
 # The public key used for verifying peer tokens which are the identify certificates.
 TOKEN_PUBLIC_KEY = ''
 
+ADDR_PREFIX = b'\xea'
+FINGER_PREFIX = b'\xef'
 
 def generate_keypair(sk=None):
     """
@@ -41,10 +43,10 @@ def key_to_address(key):
     :return:
     """
     sha256 = hashlib.sha256()
-    sha256.update('\xea')
+    sha256.update(ADDR_PREFIX)
     sha256.update(key)
     sum = sha256.digest()
-    addr = '\xea' + key + sum[:2]
+    addr = ADDR_PREFIX + key + sum[:2]
     return base58.b58encode(addr)
 
 
@@ -61,12 +63,12 @@ def address_to_key(address):
         return None
 
     prefix = val[0]
-    if prefix != '\xea':
+    if prefix != ADDR_PREFIX:
         return None
 
     key = val[1:33]
     sha256 = hashlib.sha256()
-    sha256.update('\xea')
+    sha256.update(ADDR_PREFIX)
     sha256.update(key)
     sum = sha256.digest()
 
@@ -90,11 +92,11 @@ def validate_address(addr):
         return False
 
     prefix = val[0]
-    if prefix != '\xea':
+    if prefix != ADDR_PREFIX:
         return False
 
     sha256 = hashlib.sha256()
-    sha256.update('\xea')
+    sha256.update(ADDR_PREFIX)
     sha256.update(val[1:33])
     sum = sha256.digest()
 
@@ -126,10 +128,10 @@ def key_to_fingerprint(key):
     #assert len(key_hash) == 20
 
     sha256 = hashlib.sha256()
-    sha256.update('\xef')
+    sha256.update(FINGER_PREFIX)
     sha256.update(key_hash)
     checksum = sha256.digest()
-    result = b'\xef'+key_hash+checksum[:4]
+    result = FINGER_PREFIX+key_hash+checksum[:4]
     return base58.b58encode(result)
 
 
@@ -140,12 +142,12 @@ def validate_fingerprint(fingerprint):
         return False
 
     prefix = val[0]
-    if prefix != '\xef':
+    if prefix != FINGER_PREFIX:
         return False
 
     key_hash = val[1:21]
     sha256 = hashlib.sha256()
-    sha256.update('\xef')
+    sha256.update(FINGER_PREFIX)
     sha256.update(key_hash)
     given_checksum = sha256.digest()[:4]
     expected_checksum = val[-4:]

@@ -1,0 +1,112 @@
+# -*- coding: utf-8 -*-
+from __future__ import print_function, division, absolute_import
+
+import unittest
+import libnacl.public
+import libnacl.secret
+import libnacl.utils
+import pyscrypt
+import base58
+import binascii
+from eavatar.hub.util import crypto
+
+
+class CryptoTest(unittest.TestCase):
+
+    def test_generate_keypair(self):
+        bob = libnacl.public.SecretKey()
+        assert bob is not None
+
+        sk = bob.sk
+        pk = bob.pk
+        print("Public key: ", base58.b58encode(pk))
+        print("Secret key: ", base58.b58encode(sk))
+        print("Address: ", crypto.key_to_address(pk))
+
+        self.assertEqual(len(sk), 32)
+
+    def test_public_key_encryption(self):
+        msg = b'You\'ve got two empty halves of coconut and you\'re bangin\' \'em together.'
+        bob = libnacl.public.SecretKey()
+        alice = libnacl.public.SecretKey()
+        bob_box = libnacl.public.Box(bob.sk, alice.pk)
+        alice_box = libnacl.public.Box(alice.sk, bob.pk)
+        bob_ctxt = bob_box.encrypt(msg)
+        bclear = alice_box.decrypt(bob_ctxt)
+        alice_ctxt = alice_box.encrypt(msg)
+        aclear = alice_box.decrypt(alice_ctxt)
+
+        self.assertEqual(bclear, aclear)
+        self.assertEqual(bclear, msg)
+
+    def test_secret_key_encryption(self):
+        msg = b'But then of course African swallows are not migratory.'
+        # Create a SecretBox object, if not passed in the secret key is
+        # Generated purely from random data
+        box = libnacl.secret.SecretBox()
+        # Messages can now be safely encrypted
+        ctxt = box.encrypt(msg)
+        # An addition box can be created from the original box secret key
+        box2 = libnacl.secret.SecretBox(box.sk)
+        # Messages can now be easily encrypted and decrypted
+        clear1 = box.decrypt(ctxt)
+        clear2 = box2.decrypt(ctxt)
+        ctxt2 = box2.encrypt(msg)
+        clear3 = box.decrypt(ctxt2)
+
+        self.assertEqual(clear1, clear2)
+        self.assertEqual(clear2, clear3)
+        self.assertEqual(msg, clear1)
+
+    def test_nonce_generation(self):
+
+        prev_nonce = libnacl.utils.rand_nonce()
+        for i in xrange(100):
+            nonce = libnacl.utils.rand_nonce()
+            self.assertNotEqual(prev_nonce, nonce)
+            prev_nonce = nonce
+
+    def test_demo_user_keys(self):
+        sk_base58 = b"29oiwbqkhLGBuX5teL5d2vsiJ3EXk3dpyBiPwA7W9DJG"
+        sk_decoded = base58.b58decode(sk_base58)
+        hash = pyscrypt.hash(password=b"demouser",
+                             salt=b"demouser",
+                             N=1024,
+                             r=1,
+                             p=1,
+                             dkLen=32)
+
+        sk = base58.b58encode(hash)
+        hex_sk = binascii.b2a_hex(hash)
+        print('Secret Key:', sk, 'length: ', len(sk))
+        self.assertEqual(sk_base58, sk)
+        self.assertEqual(sk_decoded, hash)
+
+        #print(sk)
+        keypair = libnacl.public.SecretKey(hash)
+
+        # 2ipFYsqXnrw4Mt2RUWzEQntAH1FEFB8R52rAT3eExn9S
+        pk_base58 = base58.b58encode(keypair.pk)
+        pk_decoded = base58.b58decode(pk_base58)
+
+        self.assertEqual(pk_decoded, keypair.pk)
+        print('Public Key:', pk_base58, 'length: ', len(pk_base58))
+
+        print("Address: ", crypto.key_to_address(keypair.pk))
+
+    def test_calc_shared_key_via_two_key_pairs(self):
+        bob = libnacl.public.SecretKey()
+        alice = libnacl.public.SecretKey()
+        alice_key = libnacl.crypto_box_beforenm(bob.pk, alice.sk)
+        bob_key = libnacl.crypto_box_beforenm(alice.pk, bob.sk)
+        #print(base58.b58encode(bob_key))
+        self.assertEqual(bob_key, alice_key)
+
+    def test_secret_key_encryption(self):
+        sk = crypto.generate_symmetric_key()
+        print('Secret key:', base58.b58encode(sk))
+        plaintext = b'1234abcd'
+        ciphertext = crypto.secret_key_encrypt(sk, plaintext)
+        clear1 = crypto.secret_key_decrypt(sk, ciphertext)
+        self.assertEqual(plaintext, clear1)
+
