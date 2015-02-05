@@ -32,7 +32,7 @@ def patch_sys_getfilesystemencoding():
     sys.getfilesystemencoding = patched_func
 
 
-class Launcher(object):
+class Main(object):
     def __init__(self):
         self._server = None
         patch_sys_getfilesystemencoding()
@@ -45,6 +45,6 @@ class Launcher(object):
 
 
 if __name__ == "__main__":
-    launcher = Launcher()
+    launcher = Main()
     srv = gevent.spawn(launcher.run)
     gevent.joinall([srv])

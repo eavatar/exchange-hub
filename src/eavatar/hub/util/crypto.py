@@ -13,6 +13,7 @@ TOKEN_PUBLIC_KEY = ''
 ADDR_PREFIX = b'\xea'
 FINGER_PREFIX = b'\xef'
 
+
 def generate_keypair(sk=None):
     """
     Generate a random key pair.

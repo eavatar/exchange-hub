@@ -39,7 +39,7 @@ def calc_etag(content):
 
 def send_static_file(req, resp, path, media_type=None):
     path = os.path.join(static_folder, path)
-    logger.debug("Gets file %s", path)
+    #logger.debug("Gets file %s", path)
     if not os.path.exists(path):
         resp.status = falcon.HTTP_404
         resp.body = b"<html><body>File Not Found.</body></html>"

@@ -5,7 +5,7 @@ import unittest
 import falcon
 import falcon.testing
 import gevent
-from eavatar.hub.main import Launcher
+from eavatar.hub.main import Main
 
 
 class FunctionalTest(unittest.TestCase):
@@ -16,7 +16,7 @@ class FunctionalTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        FunctionalTest._launcher = Launcher()
+        FunctionalTest._launcher = Main()
         server_greenlet = gevent.spawn(FunctionalTest._launcher.run)
 
     @classmethod

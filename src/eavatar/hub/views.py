@@ -9,12 +9,12 @@ logger = logging.getLogger(__name__)
 
 
 def nocache(req, resp, params):
-    resp.set_header('pragma', 'no-cache')
-    resp.set_header('cache-control', 'no-cache')
+    resp.set_header(b'pragma', b'no-cache')
+    resp.set_header(b'cache-control', b'no-cache')
 
 
 def static_cacheable(req, resp):
-    resp.set_header('cache-control', 'max-age=86400,s-maxage=86400')
+    resp.set_header(b'cache-control', b'max-age=86400,s-maxage=86400')
 
 
 def set_cors_header(req, resp):
@@ -25,19 +25,19 @@ def set_cors_header(req, resp):
     :param resp:
     :return:
     """
-    resp.set_header('Access-Control-Allow-Origin', '*')
+    resp.set_header(b'Access-Control-Allow-Origin', '*')
 
 
-class RootView(object):
+class RootResource(object):
     def on_head(self, req, resp):
         resp.status = falcon.HTTP_200
 
     def on_get(self, req, resp):
-        logger.debug(req.get_header('accept'))
-        prefered_type = req.client_prefers(['text/html', b'application/json'])
-        if prefered_type == 'application/json':
+        logger.debug(req.get_header(b'accept'))
+        prefered_type = req.client_prefers([b'text/html', b'application/json'])
+        if prefered_type == b'application/json':
             resp.status = falcon.HTTP_200
-            resp.body = '{"message": "Hello from root!"}'
+            resp.body = b'{"message": "Hello from root!"}'
         else:
             webutils.send_static_file(req, resp, 'index.html', media_type=b'text/html; charset=utf-8')
 
@@ -47,17 +47,38 @@ class FaviconResource(object):
         super(FaviconResource, self).__init__(*args, **kwargs)
 
     def on_get(self, req, resp):
-        webutils.send_static_file(req, resp, 'favicon.ico', media_type='image/vnd.microsoft.icon')
+        webutils.send_static_file(req, resp, 'favicon.ico', media_type=b'image/vnd.microsoft.icon')
 
 
-class AvatarView(object):
-
+class StatusResource(object):
+    """
+    Check the service status.
+    """
     def on_get(self, req, resp):
-        resp.body = '{"message": "Hello from avatar!"}'
+        resp.body = '{"result": "OK"}'
         resp.status = falcon.HTTP_200
 
 
-class AnchorView(object):
+class AvatarCollection(object):
     def on_get(self, req, resp):
-        resp.body = '{"message": "Hello from anchor!"}'
+        resp.body = '[]'
+        resp.status = falcon.HTTP_200
+
+
+class AvatarResource(object):
+
+    def on_get(self, req, resp, avatar_xid):
+        resp.body = '[{}]'
+        resp.status = falcon.HTTP_200
+
+
+class RouterResource(object):
+    def on_post(self, req, resp, address=""):
+        """
+        Routes a message to its destination.
+
+        :param req:
+        :param resp:
+        :return:
+        """
         resp.status = falcon.HTTP_200

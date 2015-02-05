@@ -13,7 +13,7 @@ multiprocessing.freeze_support()
 import pkg_resources
 
 
-from eavatar.hub.main import Launcher
+from eavatar.hub.main import Main
 
 # imports dependencies for PyInstaller to figure out what to include.
 import depends
@@ -22,7 +22,7 @@ depends.absolute_import
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(name)s - %(message)s',)
 try:
-    launcher = Launcher()
-    launcher.run()
+    main = Main()
+    main.run()
 except KeyboardInterrupt:
     sys.exit(0)

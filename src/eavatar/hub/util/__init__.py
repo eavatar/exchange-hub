@@ -14,7 +14,7 @@ def resource_path(relative):
 
     abspath = os.path.abspath(os.path.join(__file__, "..", "..", ".."))
     abspath = os.path.dirname(abspath)
-    print("abspath: ", abspath)
+    #print("abspath: ", abspath)
     return os.path.join(abspath, relative)
 
 
