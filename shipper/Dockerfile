@@ -1,7 +1,7 @@
-FROM eavatartech/basebox
+FROM eavatar/basebox
 MAINTAINER sampot <sam@eavatar.com>
 
-ADD eavatar /app
+ADD hub.tar /app
 
 EXPOSE 5000
 

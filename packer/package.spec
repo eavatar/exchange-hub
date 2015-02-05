@@ -5,19 +5,9 @@ app_path = 'src'
 exe_name = 'eavatar'
 hiddenimports = []
 
-if sys.platform.startswith('win32'):
-    exe_name = 'eavatar.exe'
-    app_icon = os.path.join(app_path, 'media/eavatar.ico')
-    ext_name = '.win'
-elif sys.platform.startswith('linux'):
-    ext_name = '.lin'
-    run_strip = True
-elif sys.platform.startswith('darwin'):
-    ext_name = '.mac'
-else:
-    ext_name = ''
+run_strip = True
 
-a = Analysis([os.path.join(app_path,'ava.py')],
+a = Analysis([os.path.join(app_path,'hub.py')],
              pathex=['src'],
              hiddenimports=hiddenimports,
              hookspath=None,
@@ -38,7 +28,7 @@ exe = EXE(pyz,
           debug=False,
           strip=False,
           upx=True,
-          icon= os.path.join(app_path, 'media/eavatar.ico'),
+          icon= os.path.join(app_path, 'src/static/eavatar.ico'),
           console=True )
 
 
