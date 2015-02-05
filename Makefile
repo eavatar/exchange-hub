@@ -27,3 +27,5 @@ shipper: shipper/Dockerfile dist/hub.tar
 	docker build -t eavatar/hub ./build/shipper
 
 
+tester: tester/Dockerfile
+	docker build -t eavatar/hub-tester ./tester
