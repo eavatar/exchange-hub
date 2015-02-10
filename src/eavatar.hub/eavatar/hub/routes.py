@@ -7,12 +7,13 @@ Map URI routes to resources(views).
 
 from .app import api
 from .views import (
+    RootResource,
+    FaviconResource,
     AvatarCollection,
     AvatarResource,
-    RootResource,
     RouterResource,
-    FaviconResource,
-    StatusResource
+    KeypairResource,
+    StatusResource,
 )
 
 from .sinks.static import StaticFiles
@@ -26,6 +27,7 @@ api.add_route("/status", StatusResource())
 api.add_route("/avatars", AvatarCollection())
 api.add_route("/avatars/{avatar_xid}", AvatarResource())
 api.add_route("/route/{address}", RouterResource())
+api.add_route("/keypair", KeypairResource())
 
 #
 # sinks

@@ -37,7 +37,7 @@ def generate_symmetric_key():
     return box.sk
 
 
-def key_to_address(key):
+def key_to_xid(key):
     """
     Generate an address from a public key.
     :param key: the 32-byte byte string.
@@ -51,7 +51,7 @@ def key_to_address(key):
     return base58.b58encode(addr)
 
 
-def address_to_key(address):
+def xid_to_key(address):
     """
     Retrieve the key from an address.
 
@@ -79,7 +79,7 @@ def address_to_key(address):
     return key
 
 
-def validate_address(addr):
+def validate_xid(addr):
     """
     Check if the provided address is valid or not.
 
@@ -109,7 +109,7 @@ def validate_address(addr):
 
 def key_to_fingerprint(key):
     """
-    Node id is used to uniquely identify an entity without exposing extra information.
+    Fingerprint is used to uniquely identify an entity without exposing extra information.
     :param key: the public key
     :return:
     """
@@ -158,8 +158,8 @@ def validate_fingerprint(fingerprint):
     return True
 
 
-def address_to_fingerprint(address):
-    key = address_to_key(address)
+def xid_to_fingerprint(address):
+    key = xid_to_key(address)
     if key:
         return key_to_fingerprint(key)
     else:

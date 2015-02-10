@@ -21,7 +21,7 @@ class CryptoTest(unittest.TestCase):
         pk = bob.pk
         print("Public key: ", base58.b58encode(pk))
         print("Secret key: ", base58.b58encode(sk))
-        print("Address: ", crypto.key_to_address(pk))
+        print("Address: ", crypto.key_to_xid(pk))
 
         self.assertEqual(len(sk), 32)
 
@@ -92,7 +92,7 @@ class CryptoTest(unittest.TestCase):
         self.assertEqual(pk_decoded, keypair.pk)
         print('Public Key:', pk_base58, 'length: ', len(pk_base58))
 
-        print("Address: ", crypto.key_to_address(keypair.pk))
+        print("Address: ", crypto.key_to_xid(keypair.pk))
 
     def test_calc_shared_key_via_two_key_pairs(self):
         bob = libnacl.public.SecretKey()

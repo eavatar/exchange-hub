@@ -46,3 +46,12 @@ class ApiTest(FunctionalTest):
         res = self.app.get('/status', headers={'accept': 'application/json'})
         self.assertEqual(falcon.HTTP_200, self.app.response.status)
         self.assertTrue("OK" in res[0])
+
+    ### keypair resource ###
+    def test_generate_new_key_pair(self):
+        res = self.app.post('/keypair', headers={'accept': JSON_CONTENT_TYPE})
+        self.assertEqual(falcon.HTTP_200, self.app.response.status)
+        result = json.loads(res[0])
+        self.assertIsNotNone(result.get('xid'))
+        self.assertIsNotNone(result.get('key'))
+        self.assertIsNotNone(result.get('secret'))

@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import json
 import logging
 import falcon
+import base58
 from eavatar.hub.util import webutils
+from eavatar.hub.util import crypto
 
 logger = logging.getLogger(__name__)
 
@@ -69,6 +72,24 @@ class AvatarResource(object):
 
     def on_get(self, req, resp, avatar_xid):
         resp.body = '[{}]'
+        resp.status = falcon.HTTP_200
+
+
+class KeypairResource(object):
+
+    def on_post(self, req, resp):
+        """
+        Generates new keypair.
+        :param req:
+        :param resp:
+        :return:
+        """
+        key, secret = crypto.generate_keypair()
+        result = {}
+        result['key'] = base58.b58encode(key)
+        result['secret'] = base58.b58encode(secret)
+        result['xid'] = crypto.key_to_xid(key)
+        resp.body = json.dumps(result)
         resp.status = falcon.HTTP_200
 
 

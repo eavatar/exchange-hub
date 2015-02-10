@@ -32,9 +32,9 @@ class UtilTest(unittest.TestCase):
 
     def test_key_to_address(self):
         key = os.urandom(32)
-        addr = crypto.key_to_address(key)
+        addr = crypto.key_to_xid(key)
         print("Address: ", addr, ', length:', len(addr))
-        self.assertTrue(crypto.validate_address(addr))
+        self.assertTrue(crypto.validate_xid(addr))
 
     def test_parse_authorization_header(self):
         result = webutils.parse_authorization_header('EAvatar key="1234",realm="http://eavatar.me", token="abcd"')
