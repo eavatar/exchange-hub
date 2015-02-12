@@ -10,7 +10,7 @@ class Avatar(Model):
     """
     Represents anything with an identity that can send or receive messages.
     """
-    xid = columns.Text(primary_key=True)
+    xid = columns.Text(primary_key=True, partition_key=True)
     owner_xid = columns.Text(default=None)  # the avatar who owns this one.
     parent_xid = columns.Text(default=None)  # the containment relationship.
     supervisor_xid = columns.Text(default=None)  # the avatar who can manage this one.
@@ -39,7 +39,7 @@ class Anchor(Model):
     Represents an outgoing link to an avatar or an endpoint.
     An anchor must belong to one and only one avatar.
     """
-    avatar_xid = columns.Text(primary_key=True)
+    avatar_xid = columns.Text(primary_key=True, partition_key=True)
     label = columns.Text(primary_key=True, clustering_order="ASC", default='')
     kind = columns.Text(default="e")  # 'e' for endpoint, 'a' for avatar.
     value = columns.Text()  # an url if kind is endpoint, or an XID for avatar.
@@ -67,7 +67,7 @@ class Message(Model):
       The content to be sent as is. That is, the hub doesn't interpret or modify the payload.
 
     """
-    avatar_xid = columns.Text(primary_key=True)
+    avatar_xid = columns.Text(primary_key=True, partition_key=True)
     message_id = columns.TimeUUID(primary_key=True, clustering_order="DESC")
     command = columns.Text(default='POST')
     headers = columns.Text()
