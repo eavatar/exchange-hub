@@ -3,19 +3,18 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import sys
 import argparse
-from cqlengine.management import sync_table, create_keyspace, delete_keyspace
+from cqlengine.management import sync_table, create_keyspace, delete_keyspace, drop_table
 from eavatar.hub.models import Avatar, Message
 
 from cqlengine import connection
-
-KEYSPACE = b'exchange'
+from settings import KEYSPACE, DB_SERVERS
 
 
 class HubCLI(object):
 
     def __init__(self):
         parser = argparse.ArgumentParser(
-            description='Hub command-line tool',
+            description='Command-line tool for EAvatar Hub',
             usage='''hubcli <command> [<args>]
 
 The most commonly used commands are:
@@ -40,23 +39,32 @@ The most commonly used commands are:
             description='Synchronize models with Cassandra')
         args = parser.parse_args(sys.argv[2:])
 
-        connection.setup(['127.0.0.1'], KEYSPACE)
+        connection.setup(DB_SERVERS, KEYSPACE)
         sync_table(Avatar)
         sync_table(Message)
+
+    def drop_tables(self):
+        parser = argparse.ArgumentParser(
+            description='Delete tables for models')
+        args = parser.parse_args(sys.argv[2:])
+
+        connection.setup(DB_SERVERS, KEYSPACE)
+        drop_table(Avatar)
+        drop_table(Message)
 
     def create_space(self):
         parser = argparse.ArgumentParser(
             description='Create the key space for the hub')
         args = parser.parse_args(sys.argv[2:])
 
-        connection.setup(['127.0.0.1'], KEYSPACE)
+        connection.setup(DB_SERVERS, KEYSPACE)
         create_keyspace(KEYSPACE, replication_factor=1, strategy_class='SimpleStrategy')
 
     def remove_space(self):
         parser = argparse.ArgumentParser(
             description='Delete the key space used by the hub')
         args = parser.parse_args(sys.argv[2:])
-        connection.setup(['127.0.0.1'], KEYSPACE)
+        connection.setup(DB_SERVERS, KEYSPACE)
         delete_keyspace(KEYSPACE)
 
 
