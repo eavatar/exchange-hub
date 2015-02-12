@@ -10,7 +10,7 @@ import libnacl.secret
 # The public key used for verifying peer tokens which are the identify certificates.
 TOKEN_PUBLIC_KEY = ''
 
-ADDR_PREFIX = b'\xea'
+XID_PREFIX = b'\xea'
 FINGER_PREFIX = b'\xef'
 
 
@@ -44,32 +44,33 @@ def key_to_xid(key):
     :return:
     """
     sha256 = hashlib.sha256()
-    sha256.update(ADDR_PREFIX)
+    sha256.update(XID_PREFIX)
     sha256.update(key)
     sum = sha256.digest()
-    addr = ADDR_PREFIX + key + sum[:2]
+    addr = XID_PREFIX + key + sum[:2]
+
     return base58.b58encode(addr)
 
 
-def xid_to_key(address):
+def xid_to_key(xid):
     """
-    Retrieve the key from an address.
+    Retrieve the key from an XID.
 
-    :param address:
+    :param xid:
     :return:
     """
-    val = base58.b58decode(address)
+    val = base58.b58decode(xid)
 
     if len(val) != 35:
         return None
 
     prefix = val[0]
-    if prefix != ADDR_PREFIX:
+    if prefix != XID_PREFIX:
         return None
 
     key = val[1:33]
     sha256 = hashlib.sha256()
-    sha256.update(ADDR_PREFIX)
+    sha256.update(XID_PREFIX)
     sha256.update(key)
     sum = sha256.digest()
 
@@ -93,11 +94,11 @@ def validate_xid(addr):
         return False
 
     prefix = val[0]
-    if prefix != ADDR_PREFIX:
+    if prefix != XID_PREFIX:
         return False
 
     sha256 = hashlib.sha256()
-    sha256.update(ADDR_PREFIX)
+    sha256.update(XID_PREFIX)
     sha256.update(val[1:33])
     sum = sha256.digest()
 

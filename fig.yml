@@ -1,5 +1,34 @@
+haproxy:
+    image: eavatar/haproxy
+    ports:
+    - "8080:80"
+    - "8443:443"
+    links:
+    - "hub:webapp"
+
 hub:
- build: .
- command: python hub.py
- ports:
- - "5000:5000"
+    build: .
+    command: python hub.py
+    volumes:
+    - "src/eavatar.hub:/code"
+    links:
+    - "cassandra:cass1"
+
+cassandra:
+    image: eavatar/cassandra-single
+    ports:
+    - "7199:7199"
+    - "7000:7000"
+    - "7001:7001"
+    - "9160:9160"
+    - "9042:9042"
+
+consul:
+    image: progrium/consul
+    command: "-server -bootstrap -ui-dir /ui"
+    ports:
+    - "8400:8400"
+    - "8500:8500"
+    - "8600:53/udp"
+    hostname: node1
+

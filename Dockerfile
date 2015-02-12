@@ -1,5 +1,5 @@
 FROM eavatar/hub-cooker
 
-ADD ./src /code
+VOLUME /code
 WORKDIR /code
 

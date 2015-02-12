@@ -38,3 +38,9 @@ MAX_REQUEST_SIZE = 4096
 ##### Environment variable ####
 AVA_HOME = 'AVA_HOME'
 AVA_SECRET_KEY = 'AVA_SECRET_KEY'
+
+
+#### Cassandra datastore ####
+KEYSPACE = 'exchange'
+DB_SERVERS = ['cass1']
+

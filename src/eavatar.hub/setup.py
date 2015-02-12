@@ -18,4 +18,9 @@ setup(
     author_email="sam@eavatar.com",
     url="http://www.eavatar.com",
 
+    entry_points={
+        'console_scripts': [
+            'hubcli = scripts.hubcli:main',
+        ],
+    },
 )

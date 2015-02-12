@@ -1,33 +1,30 @@
 # -*- coding: utf-8 -*-
-from __future__ import division, print_function, unicode_literals
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 """
 Map URI routes to resources(views).
 """
 
-from .app import api
-from .views import (
-    RootResource,
-    FaviconResource,
-    AvatarCollection,
-    AvatarResource,
-    RouterResource,
-    KeypairResource,
-    StatusResource,
-)
+from eavatar.hub.app import api
+from eavatar.hub import views
 
-from .sinks.static import StaticFiles
+from eavatar.hub.sinks.static import StaticFiles
 
 #
-# resources
+# resource mappings.
 #
-api.add_route("/", RootResource())
-api.add_route("/favicon.ico", FaviconResource())
-api.add_route("/status", StatusResource())
-api.add_route("/avatars", AvatarCollection())
-api.add_route("/avatars/{avatar_xid}", AvatarResource())
-api.add_route("/route/{address}", RouterResource())
-api.add_route("/keypair", KeypairResource())
+api.add_route("/", views.RootResource())
+api.add_route("/favicon.ico", views.FaviconResource())
+
+api.add_route("/status", views.StatusResource())
+
+api.add_route("/avatars", views.AvatarCollection())
+api.add_route("/avatars/{avatar_xid}", views.AvatarResource())
+api.add_route("/avatars/{avatar_xid}/messages", views.MessageStore())
+
+api.add_route("/route/{address}", views.RouterResource())
+
+api.add_route("/keypair", views.KeypairResource())
 
 #
 # sinks

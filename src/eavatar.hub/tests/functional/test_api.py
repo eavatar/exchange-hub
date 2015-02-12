@@ -17,12 +17,12 @@ HTTPS_URL = 'https://127.0.0.1:8443'
 class ApiTest(FunctionalTestCase):
     alice_key = '8fSreudn6GdSiGPh6VDWBuTs7533dMNS2K4wdDBDaXuf'
     alice_secret = 'EpPFLbF85k73ZoTPMzG2hjJHD8y5WaCqvNzGM6GN7vtD'
-    alice_address = 'QPndzFJTmycdfg5jxcSghX2scJnc3TNqVEfYtVTA5JVYiPQY'
+    alice_xid = 'QPndzFJTmycdfg5jxcSghX2scJnc3TNqVEfYtVTA5JVYiPQY'
     alice_auth = 'EAvatar sub="QPndzFJTmycdfg5jxcSghX2scJnc3TNqVEfYtVTA5JVYiPQY",sig="1234"'
 
     bob_key = 'HoTw7v3pvxLiDNAav3ziXR9ipLqkivP8MHbD9jUPsbT'
     bob_secret = 'GfKydnBomusuQAARppnbg44WbjuY3rAVuX5HBPEKHH6k'
-    bob_address = 'QMJzoFDsv94hRBs9168ecZVTxxhuKAqGrE3PgkqpdxvpzWxP'
+    bob_xid = 'QMJzoFDsv94hRBs9168ecZVTxxhuKAqGrE3PgkqpdxvpzWxP'
     bob_auth = 'EAvatar sub="QMJzoFDsv94hRBs9168ecZVTxxhuKAqGrE3PgkqpdxvpzWxP",sig="1234"'
 
     def setUp(self):
@@ -61,3 +61,28 @@ class ApiTest(FunctionalTestCase):
         self.assertIsNotNone(xid)
         self.assertIsNotNone(key)
         self.assertIsNotNone(secret)
+
+    def test_create_new_avatar(self):
+        data = {'xid': self.alice_xid}
+        res = self.app.put(HTTP_URL + '/avatars',
+                           headers={'content-type': 'application/json'},
+                           data=json.dumps(data))
+        json_res = res.json()
+        self.assertEqual(200, res.status_code)
+        self.assertEqual(json_res["result"], "OK")
+
+    def test_send_a_message_to_avatar(self):
+        data = {
+            "command": "POST",
+            "headers": {
+              "Content-type": "text/plain",
+              "Content-length": 7,
+            },
+            "payload": "hello"
+        }
+
+        json_data = json.dumps(data)
+
+        res = self.app.post(HTTP_URL + '/route/' + self.alice_xid,
+                            data=json_data)
+        self.assertEqual(res.status_code, 200)

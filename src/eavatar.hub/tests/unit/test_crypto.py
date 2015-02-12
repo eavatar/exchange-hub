@@ -17,13 +17,14 @@ class CryptoTest(unittest.TestCase):
         bob = libnacl.public.SecretKey()
         assert bob is not None
 
-        sk = bob.sk
-        pk = bob.pk
-        print("Public key: ", base58.b58encode(pk))
-        print("Secret key: ", base58.b58encode(sk))
-        print("Address: ", crypto.key_to_xid(pk))
+        self.assertEqual(len(bob.sk), 32)
+        sk = base58.b58encode(bob.sk)
+        pk = base58.b58encode(bob.pk)
+        xid = crypto.key_to_xid(bob.pk)
 
-        self.assertEqual(len(sk), 32)
+        print("Public key: ", pk, ", len: ", len(pk))
+        print("Secret key: ", sk, ", len: ", len(sk))
+        print("XID: ", xid, ", len: ", len(xid))
 
     def test_public_key_encryption(self):
         msg = b'You\'ve got two empty halves of coconut and you\'re bangin\' \'em together.'
@@ -92,7 +93,7 @@ class CryptoTest(unittest.TestCase):
         self.assertEqual(pk_decoded, keypair.pk)
         print('Public Key:', pk_base58, 'length: ', len(pk_base58))
 
-        print("Address: ", crypto.key_to_xid(keypair.pk))
+        print("XID: ", crypto.key_to_xid(keypair.pk))
 
     def test_calc_shared_key_via_two_key_pairs(self):
         bob = libnacl.public.SecretKey()
@@ -102,11 +103,11 @@ class CryptoTest(unittest.TestCase):
         #print(base58.b58encode(bob_key))
         self.assertEqual(bob_key, alice_key)
 
-    def test_secret_key_encryption(self):
-        sk = crypto.generate_symmetric_key()
-        print('Secret key:', base58.b58encode(sk))
-        plaintext = b'1234abcd'
-        ciphertext = crypto.secret_key_encrypt(sk, plaintext)
-        clear1 = crypto.secret_key_decrypt(sk, ciphertext)
-        self.assertEqual(plaintext, clear1)
+    def test_key_to_fingerprint(self):
+        bob = libnacl.public.SecretKey()
+        assert bob is not None
 
+        pk = bob.pk
+
+        fp = crypto.key_to_fingerprint(pk)
+        print("FP: ", fp, ", len: ", len(fp))
