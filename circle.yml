@@ -1,21 +1,15 @@
 machine:
+  python:
+    version: python-2.7.6
   services:
     - docker
 
 dependencies:
   override:
-    - virtualenv ./env/dev
-    - . ./env/dev/bin/activate
     - pip install -r requirements.txt
 
 test:
   override:
-    - docker run -d --name basebox eavatar/basebox; sleep 2
+    - bin/py.test src/eavatar.hub/tests/unit
 
 
-deployment:
-  hub:
-    branch: master
-    commands:
-      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
-      - docker push eavatar/basebox
