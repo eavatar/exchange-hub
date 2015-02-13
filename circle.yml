@@ -9,6 +9,7 @@ dependencies:
     - pip install --upgrade pip
     - easy_install -U setuptools
     - pip install -r requirements.txt
+    - python bootstrap.py
 
 test:
   override:
