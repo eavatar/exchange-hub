@@ -30,3 +30,4 @@ shipper: builders/shipper/Dockerfile dist/hub.tar
 
 tester: builders/tester/Dockerfile
 	docker build -t eavatar/hub-tester ./tester
+

@@ -4,7 +4,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import sys
 import argparse
 from cqlengine.management import sync_table, create_keyspace, delete_keyspace, drop_table
-from eavatar.hub.models import Avatar, Message
+from eavatar.hub import avatar, message, anchor
 
 from cqlengine import connection
 from settings import KEYSPACE, DB_SERVERS
@@ -40,8 +40,9 @@ The most commonly used commands are:
         args = parser.parse_args(sys.argv[2:])
 
         connection.setup(DB_SERVERS, KEYSPACE)
-        sync_table(Avatar)
-        sync_table(Message)
+        sync_table(avatar.Avatar)
+        sync_table(anchor.Anchor)
+        sync_table(message.Message)
 
     def drop_tables(self):
         parser = argparse.ArgumentParser(
@@ -49,8 +50,9 @@ The most commonly used commands are:
         args = parser.parse_args(sys.argv[2:])
 
         connection.setup(DB_SERVERS, KEYSPACE)
-        drop_table(Avatar)
-        drop_table(Message)
+        drop_table(avatar.Avatar)
+        drop_table(anchor.Anchor)
+        drop_table(message.Message)
 
     def create_space(self):
         parser = argparse.ArgumentParser(

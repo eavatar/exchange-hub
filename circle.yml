@@ -3,8 +3,13 @@ machine:
     version: 2.7.6
   services:
     - docker
+  hosts:
+    cass1: 127.0.0.1
 
 dependencies:
+  cache_directories:
+    - "/usr/local/lib"
+
   override:
     - wget https://download.libsodium.org/libsodium/releases/libsodium-1.0.2.tar.gz
     - tar zxvf libsodium-1.0.2.tar.gz
@@ -23,7 +28,7 @@ test:
     - bin/py.test src/eavatar.hub/tests/integration/
     - bin/hubcli create_space
     - bin/hubcli sync_tables
-    - bin/py.tet src/eavatar.hub/tests/functional/
+    - bin/py.test src/eavatar.hub/tests/functional/
 
 
 
