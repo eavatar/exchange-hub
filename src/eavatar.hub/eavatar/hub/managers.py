@@ -5,8 +5,6 @@ Model managers providing extra business logic if needed.
 """
 
 
-from eavatar.hub import models
-
 
 class BaseManager(object):
     def __init__(self, model):
