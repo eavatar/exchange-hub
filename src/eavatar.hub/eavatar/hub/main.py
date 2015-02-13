@@ -12,6 +12,9 @@ from gevent import pywsgi
 
 from eavatar.hub.app import api
 import eavatar.hub.routes
+from eavatar.hub import (
+    avatar
+)
 
 
 def _mygetfilesystemencoding():

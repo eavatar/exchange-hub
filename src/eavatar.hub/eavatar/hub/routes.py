@@ -7,7 +7,7 @@ Map URI routes to resources(views).
 
 from eavatar.hub.app import api
 from eavatar.hub import views
-
+from eavatar.hub import avatar
 from eavatar.hub.sinks.static import StaticFiles
 
 #
@@ -18,8 +18,8 @@ api.add_route("/favicon.ico", views.FaviconResource())
 
 api.add_route("/status", views.StatusResource())
 
-api.add_route("/avatars", views.AvatarCollection())
-api.add_route("/avatars/{avatar_xid}", views.AvatarResource())
+api.add_route("/avatars", avatar.AvatarCollection())
+api.add_route("/avatars/{avatar_xid}", avatar.AvatarResource())
 api.add_route("/avatars/{avatar_xid}/messages", views.MessageStore())
 
 api.add_route("/route/{address}", views.RouterResource())

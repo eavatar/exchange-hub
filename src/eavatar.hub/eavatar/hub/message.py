@@ -1,48 +1,16 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
+"""
+Module for message manipulation.
+"""
 
-from datetime import datetime
+import ujson as json
+import falcon
 from cqlengine import columns
 from cqlengine.models import Model
 
-
-class Avatar(Model):
-    """
-    Represents anything with an identity that can send or receive messages.
-    """
-    xid = columns.Text(primary_key=True, partition_key=True)
-    owner_xid = columns.Text(default=None)  # the avatar who owns this one.
-    parent_xid = columns.Text(default=None)  # the containment relationship.
-    supervisor_xid = columns.Text(default=None)  # the avatar who can manage this one.
-    kind = columns.Text(default='thing')
-    created_at = columns.DateTime(default=datetime.utcnow())
-    modified_at = columns.DateTime(default=datetime.utcnow())
-
-
-class AvatarOwner(Model):
-    """
-    Represents relationship between an avatar and its owner.
-    """
-    owner_xid = columns.Text(primary_key=True)
-    avatar_xid = columns.Text(primary_key=True, clustering_order="ASC")
-
-
-class AvatarManager(object):
-    model = Avatar
-
-    def __init__(self):
-        pass
-
-
-class Anchor(Model):
-    """
-    Represents an outgoing link to an avatar or an endpoint.
-    An anchor must belong to one and only one avatar.
-    """
-    avatar_xid = columns.Text(primary_key=True, partition_key=True)
-    label = columns.Text(primary_key=True, clustering_order="ASC", default='')
-    kind = columns.Text(default="e")  # 'e' for endpoint, 'a' for avatar.
-    value = columns.Text()  # an url if kind is endpoint, or an XID for avatar.
+from eavatar.hub.views import ResourceBase
+from eavatar.hub.managers import BaseManager
 
 
 class Message(Model):
@@ -74,8 +42,29 @@ class Message(Model):
     payload = columns.Text(default=None)
 
 
-class MessageManager(object):
+class MessageManager(BaseManager):
     model = Message
 
     def __init__(self):
-        pass
+        super(MessageManager, self).__init__(Message)
+
+
+class MessageStore(ResourceBase):
+
+    def on_get(self, req, resp, avatar_xid):
+        """
+        Gets last N messages of the specified avatar.
+
+        :param req:
+        :param resp:
+        :param avatar_xid: the avatar's XID.
+        :return:
+        """
+        qs = Message.objects(avatar_xid=avatar_xid).limit(10)
+        result = []
+        for m in qs:
+            result.append(m)
+
+        resp.body = json.dumps(result)
+        resp.status = falcon.HTTP_200
+

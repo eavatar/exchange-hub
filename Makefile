@@ -8,6 +8,7 @@ cooker: builders/cooker/Dockerfile requirements.txt
 	cp builders/cooker/Dockerfile build/cooker/
 	docker build -t eavatar/hub-cooker ./build/cooker
 
+dist/hub.tar: packer
 
 packer: builders/packer/package.spec packer/Dockerfile
 	mkdir -p build/packer
