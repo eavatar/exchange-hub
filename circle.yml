@@ -10,6 +10,7 @@ dependencies:
     - tar zxvf libsodium-1.0.2.tar.gz
     - cd libsodium-1.0.2 && ./configure && make && sudo make install
     - pip install --upgrade pip
+    - pip install fig
     - easy_install -U setuptools
     - pip install -r requirements.txt
     - python bootstrap.py
@@ -18,5 +19,8 @@ dependencies:
 test:
   override:
     - bin/py.test src/eavatar.hub/tests/unit
+    - fig up -d
+    - bin/py.test src/eavatar.hub/tests/integration/
+
 
 
