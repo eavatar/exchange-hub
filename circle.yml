@@ -18,9 +18,12 @@ dependencies:
 
 test:
   override:
-    - bin/py.test src/eavatar.hub/tests/unit
+    - bin/py.test src/eavatar.hub/tests/unit/
     - fig up -d
     - bin/py.test src/eavatar.hub/tests/integration/
+    - bin/hubcli create_space
+    - bin/hubcli sync_tables
+    - bin/py.tet src/eavatar.hub/tests/functional/
 
 
 
