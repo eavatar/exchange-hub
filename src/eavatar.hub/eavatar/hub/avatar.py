@@ -24,8 +24,8 @@ class Avatar(Model):
     parent_xid = columns.Text(default=None)  # the containment relationship.
     supervisor_xid = columns.Text(default=None)  # the avatar who can manage this one.
     kind = columns.Text(default='thing')
-    created_at = columns.DateTime(default=datetime.utcnow())
-    modified_at = columns.DateTime(default=datetime.utcnow())
+    created_at = columns.DateTime(default=datetime.utcnow)
+    modified_at = columns.DateTime(default=datetime.utcnow)
 
 
 class AvatarOwner(Model):

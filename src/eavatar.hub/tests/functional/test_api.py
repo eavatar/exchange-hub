@@ -76,7 +76,7 @@ class ApiTest(FunctionalTestCase):
             "command": "POST",
             "headers": {
               "Content-type": "text/plain",
-              "Content-length": 7,
+              "Content-length": 7
             },
             "payload": "hello"
         }

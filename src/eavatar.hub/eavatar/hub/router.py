@@ -2,7 +2,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 
-import json
+import ujson as json
 import falcon
 
 from datetime import datetime
@@ -20,15 +20,15 @@ class RouterResource(views.ResourceBase):
         :param resp:
         :return:
         """
-        msg_data = json.dumps(req.stream)
+        msg_data = json.load(req.stream)
         msg_id = TimeUUID.from_datetime(datetime.utcnow())
         msg_data['headers']['destination'] = address
         msg_data['headers']['msgid'] = msg_id
         msg = message.Message(avatar_xid=address,
                              message_id=msg_id,
                              command=msg_data['command'],
-                             headers=msg_data['headers'],
-                             payload=msg_data['payload'])
+                             headers=json.dumps(msg_data['headers']),
+                             payload=json.dumps(msg_data['payload']))
         msg.save()
         resp.status = falcon.HTTP_200
 

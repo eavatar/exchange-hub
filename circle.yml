@@ -1,15 +1,13 @@
 machine:
   python:
     version: 2.7.6
-  services:
-    - docker
   hosts:
     cass1: 127.0.0.1
 
 dependencies:
   override:
     - sudo mkdir -p /usr/local/lib
-    - sudo cp src/libs/libsodium.so.13.1.0 /usr/local/lib
+    - sudo cp src/libs/libsodium.so.13.1.0 /usr/local/lib/
     - sudo ln -s /usr/local/lib/libsodium.so.13.1.0 /usr/local/lib/libsodium.so.13
     - sudo ln -s /usr/local/lib/libsodium.so.13.1.0 /usr/local/lib/libsodium.so
     - pip install --upgrade pip
@@ -22,11 +20,6 @@ dependencies:
 test:
   override:
     - bin/py.test src/eavatar.hub/tests/unit/
-    - fig up -d
-    - bin/py.test src/eavatar.hub/tests/integration/
-    - bin/hubcli create_space
-    - bin/hubcli sync_tables
-    - bin/py.test src/eavatar.hub/tests/functional/
 
 
 
