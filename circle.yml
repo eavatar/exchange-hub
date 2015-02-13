@@ -11,9 +11,10 @@ dependencies:
     - "/usr/local/lib"
 
   override:
-    - wget https://download.libsodium.org/libsodium/releases/libsodium-1.0.2.tar.gz
-    - tar zxvf libsodium-1.0.2.tar.gz
-    - cd libsodium-1.0.2 && ./configure && make && sudo make install
+    - mkdir -p /usr/local/lib
+    - cp src/libs/libsodium.so.13.1.0 /usr/local/lib
+    - ln -s /usr/local/lib/libsodium.so.13.1.0 /usr/local/lib/libsodium.so.13
+    - ln -s /usr/local/lib/libsodium.so.13.1.0 /usr/local/lib/libsodium.so
     - pip install --upgrade pip
     - pip install fig
     - easy_install -U setuptools
