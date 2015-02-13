@@ -10,6 +10,7 @@ dependencies:
     - easy_install -U setuptools
     - pip install -r requirements.txt
     - python bootstrap.py
+    - bin/buildout
 
 test:
   override:
