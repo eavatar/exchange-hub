@@ -6,6 +6,9 @@ machine:
 
 dependencies:
   override:
+    - wget https://download.libsodium.org/libsodium/releases/libsodium-1.0.2.tar.gz &&\
+    - tar zxvf libsodium-1.0.2.tar.gz &&\
+    - cd libsodium-1.0.2 && ./configure && make && sudo make install
     - pip install --upgrade pip
     - easy_install -U setuptools
     - pip install -r requirements.txt
