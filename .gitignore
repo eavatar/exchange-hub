@@ -69,5 +69,5 @@ downloads
 
 .lock-waf_darwin_build
 waf-*
-
+overlayfs.tar
 .idea
