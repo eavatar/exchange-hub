@@ -27,5 +27,11 @@ test:
     - bin/hubcli setup_space
     - bin/py.test src/eavatar.hub/tests/functional/
 
-
+deployment:
+  hub:
+    branch: master
+    commands:
+      - docker build -t eavatar/hub .
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+      - docker push eavatar/hub
 
