@@ -4,9 +4,6 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 Acts as the entry-point if the program is not started from the runtime.
 """
 
-from gevent import monkey
-monkey.patch_all()
-
 import sys
 import logging
 

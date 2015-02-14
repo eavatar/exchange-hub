@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import ujson as json
+import json
 
 import requests
 
@@ -73,10 +73,10 @@ class ApiTest(FunctionalTestCase):
 
     def test_send_a_message_to_avatar(self):
         data = {
-            "command": "POST",
             "headers": {
-              "Content-type": "text/plain",
-              "Content-length": 7
+                "command": "POST",
+                "Content-type": "text/plain",
+                "Content-length": 7,
             },
             "payload": "hello"
         }

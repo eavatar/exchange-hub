@@ -54,12 +54,12 @@ def check_avatar(req, resp, params):
 
 
 def nocache(req, resp, params):
-    resp.set_header('pragma', 'no-cache')
-    resp.set_header('cache-control', 'no-cache')
+    resp.set_header(b'pragma', b'no-cache')
+    resp.set_header(b'cache-control', b'no-cache')
 
 
 def static_cacheable(req, resp):
-    resp.set_header('cache-control', 'max-age=86400,s-maxage=86400')
+    resp.set_header(b'cache-control', b'max-age=86400,s-maxage=86400')
 
 
 def set_cors_header(req, resp):
@@ -70,4 +70,4 @@ def set_cors_header(req, resp):
     :param resp:
     :return:
     """
-    resp.set_header('Access-Control-Allow-Origin', '*')
+    resp.set_header(b'Access-Control-Allow-Origin', '*')

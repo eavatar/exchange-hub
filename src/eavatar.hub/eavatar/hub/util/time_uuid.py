@@ -6,7 +6,8 @@ For generating monotonically increasing UUIDs.
 
 import uuid
 import datetime
-import time, calendar
+import time
+import calendar
 import threading
 import random
 

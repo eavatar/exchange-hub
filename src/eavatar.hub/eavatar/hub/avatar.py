@@ -5,13 +5,19 @@ Avatar-specific functionality.
 """
 
 import json
+import logging
 import falcon
 from datetime import datetime
 from cqlengine import columns
 from cqlengine.models import Model
 
+from eavatar.hub.app import api
+
 from eavatar.hub import views
 from eavatar.hub import managers
+
+
+logger = logging.getLogger(__name__)
 
 
 # models #
@@ -75,3 +81,7 @@ class AvatarResource(views.ResourceBase):
         pass
 
 
+# routes
+logger.debug("Binding routes for Avatar module.")
+api.add_route("/avatars", AvatarCollection())
+api.add_route("/avatars/{avatar_xid}", AvatarResource())

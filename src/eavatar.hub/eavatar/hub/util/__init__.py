@@ -2,6 +2,7 @@
 """
 Misc. utility classes/functions.
 """
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import os
 import sys
@@ -10,7 +11,7 @@ import sys
 # helper function for constructing paths to resource files.
 def resource_path(relative):
     if hasattr(sys, "_MEIPASS"):
-        return os.path.join(sys._MEIPASS, relative)
+        return os.path.join(sys._MEIPASS, b"code", relative)
 
     abspath = os.path.abspath(os.path.join(__file__, "..", "..", ".."))
     abspath = os.path.dirname(abspath)
@@ -36,4 +37,4 @@ def is_frozen():
     return hasattr(sys, "frozen")
 
 if __name__ == '__main__':
-    print resource_path('test')
+    print(resource_path('test'))

@@ -1,5 +1,6 @@
-FROM eavatar/hub-cooker
+FROM eavatar/hub-runtime
 
-VOLUME /code
-WORKDIR /code
+ADD src/eavatar.hub /app/code/
+WORKDIR /app
 
+CMD ["/app/launcher"]

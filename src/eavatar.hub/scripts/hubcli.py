@@ -69,6 +69,13 @@ The most commonly used commands are:
         connection.setup(DB_SERVERS, KEYSPACE)
         delete_keyspace(KEYSPACE)
 
+    def setup_space(self):
+        parser = argparse.ArgumentParser(
+            description='Set up key space used by the hub')
+        args = parser.parse_args(sys.argv[2:])
+        self.create_space()
+        self.sync_tables()
+
 
 def main():
     HubCLI()

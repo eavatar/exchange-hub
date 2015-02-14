@@ -6,9 +6,13 @@ Webroot
 
 import logging
 import falcon
+from eavatar.hub.app import api
 from eavatar.hub import views
 from eavatar.hub import util
 from eavatar.hub import hooks
+
+from eavatar.hub.sinks.static import StaticFiles
+
 
 logger = logging.getLogger(__name__)
 
@@ -36,3 +40,14 @@ class FaviconResource(object):
         util.webutils.send_static_file(req, resp, 'favicon.ico', media_type=b'image/vnd.microsoft.icon')
 
 
+
+logger.debug("Binding routes for Webroot module...")
+# routes
+index = RootResource()
+api.add_route(b"/", index)
+api.add_route(b"/index.html", index)
+api.add_route(b"/favicon.ico", FaviconResource())
+
+
+# serves static files
+api.add_sink(StaticFiles(), b'/static')

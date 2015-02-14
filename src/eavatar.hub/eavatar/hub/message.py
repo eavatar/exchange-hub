@@ -4,13 +4,17 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 Module for message manipulation.
 """
 
-import ujson as json
+import json
+import logging
 import falcon
 from cqlengine import columns
 from cqlengine.models import Model
+from eavatar.hub.app import api
 
 from eavatar.hub.views import ResourceBase
 from eavatar.hub.managers import BaseManager
+
+logger = logging.getLogger(__name__)
 
 
 class Message(Model):
@@ -68,3 +72,8 @@ class MessageStore(ResourceBase):
         resp.body = json.dumps(result)
         resp.status = falcon.HTTP_200
 
+
+logger.debug("Binding routes for Message module...")
+
+# routes
+api.add_route("/avatars/{avatar_xid}/messages", MessageStore())

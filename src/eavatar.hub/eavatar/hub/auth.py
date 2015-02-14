@@ -5,10 +5,15 @@ Functions relating to authentication and security tokens.
 """
 
 import base58
+import logging
 import falcon
-import ujson as json
+import json
+from eavatar.hub.app import api
+
 from eavatar.hub import views
 from eavatar.hub import util
+
+logger = logging.getLogger(__name__)
 
 
 class KeypairResource(views.ResourceBase):
@@ -29,3 +34,6 @@ class KeypairResource(views.ResourceBase):
         resp.status = falcon.HTTP_200
 
 
+logger.debug("Binding routes for Auth module...")
+# routes
+api.add_route("/keypair", KeypairResource())

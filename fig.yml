@@ -7,10 +7,11 @@ haproxy:
     - "hub:webapp"
 
 hub:
-    build: .
-    command: python hub.py
+    image: eavatar/hub-runtime
     volumes:
-    - "src/eavatar.hub:/code"
+    - "src/eavatar.hub:/app/code/"
+    ports:
+    - "5000:5000"
     links:
     - "cassandra:cass1"
 

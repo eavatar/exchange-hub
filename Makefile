@@ -1,5 +1,8 @@
+GROUP=eavatar
+NAME=exchange-hub
+VERSION=0.1.0
 
-all: cooker packer shipper
+all: build tag
 	
 cooker: builders/cooker/Dockerfile requirements.txt
 	mkdir -p build/cooker
@@ -31,3 +34,12 @@ shipper: builders/shipper/Dockerfile dist/hub.tar
 tester: builders/tester/Dockerfile
 	docker build -t eavatar/hub-tester ./tester
 
+runtime: src/eavatar.app-runtime/Makefile
+	cd src/eavatar.app-runtime && make clean all
+
+build: Dockerfile
+	docker build  -t $(GROUP)/$(NAME):$(VERSION) .
+
+tag:
+	@if ! docker images $(GROUP)/$(NAME) | awk '{ print $$2 }' | grep -q -F $(VERSION); then echo "$(NAME) version $(VERSION) is not yet built. Please run 'make build'"; false; fi
+	docker tag $(GROUP)/$(NAME):$(VERSION) $(GROUP)/$(NAME):latest
