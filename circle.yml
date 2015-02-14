@@ -32,6 +32,7 @@ deployment:
     branch: master
     commands:
       - docker build -t eavatar/hub:$CIRCLE_SHA1 .
+      - docker tag eavatar/hub:$CIRCLE_SHA1 eavatar/hub:latest
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
       - docker push eavatar/hub
 
