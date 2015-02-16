@@ -3,15 +3,13 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="eavatar.hub",
+    name="eavatar.x.hub",
     version="0.1.0",
-    description="EAvatar Hub - Rendezvous-based messaging service",
+    description="Exchange Hub - Rendezvous-based messaging service",
     #package_dir={'': ''},
     packages=find_packages(exclude=['tests']),
     include_package_data=True,
 
-    # install_requires = ['setuptools'],
-    test_suite='nose.collector',
     zip_safe=False,
 
     author="Sam Kuo",

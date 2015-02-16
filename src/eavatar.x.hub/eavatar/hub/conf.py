@@ -4,7 +4,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 ### Authentication ####
 
 # the scheme for authenticating clients.
-AUTHENTICATION_SCHEME = 'eavatar'
+AUTHENTICATION_SCHEME = 'Basic'
 
 # return to client to
 AUTHENTICATION_HEADER = 'EAvatar realm="eavatar.com",key="abcd"'

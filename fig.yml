@@ -1,7 +1,7 @@
 haproxy:
     image: eavatar/haproxy
     ports:
-    - "8080:80"
+
     - "8443:443"
     links:
     - "hub:webapp"

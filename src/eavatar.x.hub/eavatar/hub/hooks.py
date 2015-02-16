@@ -6,7 +6,7 @@ Hooks run before or after requests.
 
 import logging
 import falcon
-from eavatar.hub.conf import AUTHENTICATION_HEADER
+from eavatar.hub.conf import AUTHENTICATION_HEADER, AUTHENTICATION_SCHEME
 from eavatar.hub.util import webutils, crypto
 
 logger = logging.getLogger(__name__)
@@ -24,7 +24,7 @@ def check_authorization(req, resp, params):
 
     auth = webutils.parse_authorization_header(req.auth)
     logger.debug("%r", auth)
-    if auth['scheme'] != d.AUTHENTICATION_SCHEME:
+    if auth['scheme'] != AUTHENTICATION_SCHEME:
         _raise_unauthorized()
     #logger.debug("Request type: %s", type(req))
 
@@ -45,7 +45,7 @@ def check_owner(req, resp, params):
 
 
 def check_avatar(req, resp, params):
-    aid = params['aid']
+    aid = params['avatar_xid']
     if not aid:
         raise falcon.HTTPNotFound()
 

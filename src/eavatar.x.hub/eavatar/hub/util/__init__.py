@@ -38,3 +38,4 @@ def is_frozen():
 
 if __name__ == '__main__':
     print(resource_path('test'))
+

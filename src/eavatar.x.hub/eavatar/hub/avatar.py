@@ -64,7 +64,7 @@ class AvatarCollection(views.ResourceBase):
             resp.body = views.RESULT_OK
             resp.status = falcon.HTTP_200
         except:
-            raise
+            raise falcon.HTTPInternalServerError
 
 
 class AvatarResource(views.ResourceBase):
