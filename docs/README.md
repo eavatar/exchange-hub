@@ -1,2 +1,0 @@
-Documents for EAvatar Hub
-====================================
