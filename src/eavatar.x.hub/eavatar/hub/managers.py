@@ -25,13 +25,13 @@ class BaseManager(object):
     def remove_all(self):
         self.model.objects.all().delete()
 
-    def find(self, q):
-        return self.model.objects(q)
+    def find(self, *args, **kwargs):
+        return self.model.objects(*args, **kwargs)
 
     def find_all(self, limit=1000):
         return self.model.objects.all().limit(limit)
 
-    def find_one(self, q):
-        return self.model.objects(q).first()
+    def find_one(self, *args, **kwargs):
+        return self.model.objects(*args, **kwargs).first()
 
 

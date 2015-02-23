@@ -9,7 +9,7 @@ from tests.functional.base import FunctionalTestCase
 
 JSON_CONTENT_TYPE = 'application/json; charset=utf-8'
 
-HTTP_URL = 'http://127.0.0.1:8080'
+HTTP_URL = 'http://127.0.0.1:5000'
 HTTPS_URL = 'https://127.0.0.1:8443'
 
 
@@ -65,7 +65,9 @@ class ApiTest(FunctionalTestCase):
             "value": "http://www.mocky.io/v2/54dc01b77d28597e102c6468"
         }
 
-        res1 = self.app.put(url, headers={'accept': JSON_CONTENT_TYPE}, data=json.dumps(anchor))
+        data = json.dumps(anchor)
+
+        res1 = self.app.put(url, headers={'accept': JSON_CONTENT_TYPE, 'Content-Type': JSON_CONTENT_TYPE}, data=data)
         self.assertEqual(200, res1.status_code)
 
         res2 = self.app.get(url, headers={'accept': JSON_CONTENT_TYPE})
@@ -77,8 +79,8 @@ class ApiTest(FunctionalTestCase):
         res3 = self.app.put(url, headers={'accept': JSON_CONTENT_TYPE}, data=json.dumps(anchor))
         self.assertEqual(200, res3.status_code)
 
-        res4 = self.app.delete(url,headers={'accept': JSON_CONTENT_TYPE})
-        self.assertEqual(204, res3.status_code)
+        res4 = self.app.delete(url, headers={'accept': JSON_CONTENT_TYPE})
+        self.assertEqual(204, res4.status_code)
 
 
 

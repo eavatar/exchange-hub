@@ -57,6 +57,9 @@ from Crypto.Hash import RIPEMD
 import libnacl.public
 import libnacl.secret
 
+# pyscrypt
+import pyscrypt
+
 # app packages
 import eavatar.hub
 import eavatar.hub.util

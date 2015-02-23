@@ -60,21 +60,21 @@ class AnchorResource(object):
     def __init__(self, manager):
         self.manager = manager
 
-    def on_get(self, req, resp, avatar_xid, label):
-        logger.debug("Gets anchor for Avatar: %s with label: %s", avatar_xid, label="")
+    def on_get(self, req, resp, avatar_xid, label=""):
+        logger.debug("Gets anchor for Avatar: %s with label: %s", avatar_xid, label)
         result = self.manager.find_one(avatar_xid=avatar_xid, label=label)
         resp.body = json.dumps(result)
 
         resp.status = falcon.HTTP_200
 
-    def on_put(self, req, resp, avatar_xid, label):
-        logger.debug("Updates anchor for Avatar: %s with label: %s", avatar_xid, label="")
+    def on_put(self, req, resp, avatar_xid, label=""):
+        logger.debug("Updates anchor for Avatar: %s with label: %s", avatar_xid, label)
         pyobj = json.load(req.stream)
-
+        pyobj["avatar_xid"] = avatar_xid
         self.manager.create(**pyobj)
 
-    def on_delete(self, req, resp, avatar_xid, label):
-
+    def on_delete(self, req, resp, avatar_xid, label=""):
+        logger.debug("Removes anchor for Avatar: %s with label: %s", avatar_xid, label)
         qs = self.manager.find(avatar_xid=avatar_xid, label=label)
         qs.delete()
 
