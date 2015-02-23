@@ -16,6 +16,7 @@ from eavatar.hub.app import api
 from eavatar.hub import views
 from eavatar.hub import managers
 
+from eavatar.hub import util
 
 logger = logging.getLogger(__name__)
 
@@ -54,6 +55,25 @@ class AvatarManager(managers.BaseManager):
 class AvatarCollection(views.ResourceBase):
     def on_get(self, req, resp):
         resp.body = views.EMPTY_LIST
+        resp.status = falcon.HTTP_200
+
+    def on_post(self, req, resp):
+        """
+        Generates new Avatar without keep it in database.
+        :param req:
+        :param resp:
+        :return:
+        """
+        jsonobj = json.load(req.stream)
+        salt = jsonobj["salt"]
+        password = jsonobj["password"]
+        (pk, sk) = util.cryto.derive_secret_key(password=password, salt=salt)
+        result = dict()
+        result["xid"] = util.crypto.key_to_xid(pk)
+        result["key"] = util.codecs.base58_encode(pk)
+        result["secret"] = util.codecs.base58_encode(sk)
+
+        resp.body = json.dumps(result)
         resp.status = falcon.HTTP_200
 
     def on_put(self, req, resp):

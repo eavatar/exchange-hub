@@ -5,7 +5,6 @@ Model managers providing extra business logic if needed.
 """
 
 
-
 class BaseManager(object):
     def __init__(self, model):
         self.model = model
@@ -14,8 +13,11 @@ class BaseManager(object):
     def load(self, xid):
         return self.model.objects(xid=xid).first()
 
-    def save(self, avatar):
-        avatar.save()
+    def create(self, *args, **kwargs):
+        self.model.create(*args, **kwargs)
+
+    def save(self, model):
+        model.save()
 
     def remove(self, xid):
         self.model.objects(xid=xid).delete()

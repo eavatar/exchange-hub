@@ -20,16 +20,6 @@ logger = logging.getLogger(__name__)
 class Message(Model):
     """
     Represents messages received by an avatar. A message consists of:
-    * a command
-      Indicates if the message is a request or a response.
-      For a response, 'ERR' is used for reporting error, 'RES' is to return successful result.
-      Some commands from HTTP/1.1 are defined.
-      - 'GET': The result of a GET request might be cached by the hub.
-      - 'POST':
-      - 'PUT':
-      - 'DELETE':
-      The URI part is designated as 'Destination' header.
-
     * a headers
       Contains metadata regarding the payload. Some well-known headers are:
       - 'Content-type': the content type of the payload, e.g. 'application/json'.
@@ -41,7 +31,6 @@ class Message(Model):
     """
     avatar_xid = columns.Text(primary_key=True, partition_key=True)
     message_id = columns.TimeUUID(primary_key=True, clustering_order="DESC")
-    command = columns.Text(default='POST')
     headers = columns.Text()
     payload = columns.Text(default=None)
 

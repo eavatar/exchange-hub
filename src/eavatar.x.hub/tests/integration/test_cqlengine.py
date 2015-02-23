@@ -24,6 +24,6 @@ class CQLEngineTest(unittest.TestCase):
     def tearDown(self):
         delete_keyspace(KEYSPACE)
 
-    def test_create_example_model(self):
+    def test_create_avatar_model(self):
         em1 = avatar.Avatar.create(xid='1234')
         self.assertTrue(avatar.Avatar.objects.count() == 1)
