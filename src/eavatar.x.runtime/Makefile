@@ -1,6 +1,6 @@
 GROUP=eavatar
 NAME=hub-runtime
-VERSION=0.1.0
+VERSION=0.1.2
 
 
 all: build tag

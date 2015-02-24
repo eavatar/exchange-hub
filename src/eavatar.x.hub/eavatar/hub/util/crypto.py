@@ -2,7 +2,9 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import hashlib
+import pyscrypt
 import base58
+import binascii
 from Crypto.Hash import RIPEMD
 import libnacl.public
 import libnacl.secret
@@ -224,4 +226,22 @@ def public_key_decrypt(receiver_sk, sender_pk, ciphertext):
 
 def public_key_box(sk, pk):
     return libnacl.public.Box(sk, pk)
+
+
+def derive_secret_key(password=None, salt=None):
+    """
+    Derives secret key from password and salt combination with Scrypt.
+
+    :param password:
+    :param salt:
+    :return:
+    """
+    hash = pyscrypt.hash(password=password,
+                         salt=salt,
+                         N=1024,
+                         r=1,
+                         p=1,
+                         dkLen=32)
+
+    return hash
 
