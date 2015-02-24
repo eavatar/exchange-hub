@@ -4,7 +4,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 Avatar-specific functionality.
 """
 
-import json
+import ujson as json
 import logging
 import falcon
 from datetime import datetime
@@ -55,6 +55,10 @@ class AvatarCollection(views.ResourceBase):
     def on_get(self, req, resp):
         resp.body = views.EMPTY_LIST
         resp.status = falcon.HTTP_200
+
+    def on_post(self, req, resp):
+        data = json.load(req.stream, encoding=views.ENCODING)
+
 
     def on_put(self, req, resp):
         try:
