@@ -78,13 +78,14 @@ class AvatarCollection(views.ResourceBase):
 
     def on_put(self, req, resp):
         try:
-            data = json.load(req.stream, encoding=views.ENCODING)
+            data = json.load(req.stream)
             avatar = Avatar(xid=data.get('xid'), kind=data.get('kind'))
             avatar.save()
             resp.body = views.RESULT_OK
             resp.status = falcon.HTTP_200
-        except:
-            raise falcon.HTTPInternalServerError
+        except Exception, e:
+            logger.error(e)
+            raise
 
 
 class AvatarResource(views.ResourceBase):
