@@ -24,12 +24,12 @@ cassandra:
     - "9160:9160"
     - "9042:9042"
 
-#consul:
-#    image: progrium/consul
-#    command: "-server -bootstrap -ui-dir /ui"
-#    ports:
-#    - "8400:8400"
-#    - "8500:8500"
-#    - "8600:53/udp"
-#    hostname: node1
+consul:
+    image: eavatar/consul
+    command: "-server -bootstrap"
+    ports:
+    - "8400:8400"
+    - "8500:8500"
+    - "8600:53/udp"
+    hostname: node1
 
