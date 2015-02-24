@@ -83,8 +83,6 @@ class ApiTest(FunctionalTestCase):
         self.assertEqual(204, res4.status_code)
 
 
-
-
     ### keypair resource ###
     def test_generate_new_key_pair(self):
         res = self.app.post(HTTP_URL + '/keypair', headers={'accept': JSON_CONTENT_TYPE})
@@ -101,7 +99,8 @@ class ApiTest(FunctionalTestCase):
 
     def test_create_new_avatar(self):
         data = {'xid': self.alice_xid}
-        res = self.app.put(HTTP_URL + '/avatars',
+        url = "%s/avatars" % HTTP_URL
+        res = self.app.put(url,
                            headers={'content-type': 'application/json'},
                            data=json.dumps(data))
         self.assertEqual(200, res.status_code)
