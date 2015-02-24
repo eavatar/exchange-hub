@@ -4,8 +4,10 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 Hooks run before or after requests.
 """
 
+import binascii
 import logging
 import falcon
+import six
 from eavatar.hub.conf import AUTHENTICATION_HEADER, AUTHENTICATION_SCHEME
 from eavatar.hub.util import webutils, crypto
 
@@ -14,21 +16,44 @@ logger = logging.getLogger(__name__)
 
 def _raise_unauthorized():
     raise falcon.HTTPUnauthorized(title='Authentication required',
-                                  description='EAvatar needs specific authentication scheme.',
+                                  description='HTTP basic authentication scheme.',
                                   scheme=AUTHENTICATION_HEADER)
 
 
 def check_authorization(req, resp, params):
-    if req.auth is None:
+    http_auth = req.auth
+
+    if http_auth is None:
         _raise_unauthorized()
 
-    auth = webutils.parse_authorization_header(req.auth)
-    logger.debug("%r", auth)
-    if auth['scheme'] != AUTHENTICATION_SCHEME:
-        _raise_unauthorized()
-    #logger.debug("Request type: %s", type(req))
+    if isinstance(http_auth, six.string_types):
+            http_auth = http_auth.encode('ascii')
 
-    req.context['sub'] = auth['sub']
+    auth_type = ""
+    user_and_key = ""
+
+    try:
+        auth_type, user_and_key = http_auth.split(six.b(' '), 1)
+    except ValueError as err:
+        msg = ("Basic authorize header value not properly formed. "
+               "Supplied header {0}. Got error: {1}")
+        msg = msg.format(http_auth, str(err))
+        logger.debug(msg)
+        _raise_unauthorized()
+
+    if auth_type.lower() == six.b('basic'):
+        try:
+            user_and_key = user_and_key.strip()
+            user_and_key = binascii.a2b_base64(user_and_key)
+            user_id, key = user_and_key.split(six.b(':'), 1)
+            # TODO: verify key here
+            req.context['client_xid'] = user_id
+        except (binascii.Error, ValueError) as err:
+            msg = ("Unable to determine user and pass/key encoding. "
+                   "Got error: {0}").format(str(err))
+            logger.debug(msg)
+    else:
+        _raise_unauthorized()
 
 
 def check_owner(req, resp, params):
@@ -40,7 +65,7 @@ def check_owner(req, resp, params):
     :param params:
     :return:
     """
-    if req.context['sub'] != params['aid']:
+    if req.context['client_xid'] != params['avatar_xid']:
         raise falcon.HTTPForbidden(title="Access Denied", description="Only owner can access.")
 
 
@@ -59,7 +84,7 @@ def nocache(req, resp, params):
 
 
 def static_cacheable(req, resp):
-    resp.set_header(b'cache-control', b'max-age=86400,s-maxage=86400')
+    resp.set_header(six.b('cache-control'), six.b('max-age=86400,s-maxage=86400'))
 
 
 def set_cors_header(req, resp):
@@ -70,4 +95,4 @@ def set_cors_header(req, resp):
     :param resp:
     :return:
     """
-    resp.set_header(b'Access-Control-Allow-Origin', '*')
+    resp.set_header(b'Access-Control-Allow-Origin', six.b('*'))

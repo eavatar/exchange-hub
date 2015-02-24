@@ -13,11 +13,20 @@ class EAvatarError(Exception):
         super(EAvatarError, self).__init__(args, kwargs)
 
 
+class ImproperlyConfigured(EAvatarError):
+    """
+    Raised to indicate that settings are improperly configured.
+    """
+    def __init__(self, *args, **kwargs):
+        super(EAvatarError, self).__init__(args, kwargs)
+
+
 class DataError(EAvatarError):
     """
     Generic error related to database operations.
     """
-    pass
+    def __init__(self, *args, **kwargs):
+        super(EAvatarError, self).__init__(args, kwargs)
 
 
 class StoreExistsError(DataError):

@@ -6,6 +6,11 @@ import json
 import requests
 
 from tests.functional.base import FunctionalTestCase
+from cqlengine.management import sync_table, create_keyspace, delete_keyspace, drop_table
+from eavatar.hub import avatar, message, anchor
+
+from cqlengine import connection
+from settings import KEYSPACE, DB_SERVERS
 
 JSON_CONTENT_TYPE = 'application/json; charset=utf-8'
 
@@ -23,6 +28,14 @@ class ApiTest(FunctionalTestCase):
     bob_secret = 'GfKydnBomusuQAARppnbg44WbjuY3rAVuX5HBPEKHH6k'
     bob_xid = 'QMJzoFDsv94hRBs9168ecZVTxxhuKAqGrE3PgkqpdxvpzWxP'
     bob_auth = 'EAvatar sub="QMJzoFDsv94hRBs9168ecZVTxxhuKAqGrE3PgkqpdxvpzWxP",sig="1234"'
+
+    @classmethod
+    def setUpClass(cls):
+        connection.setup(DB_SERVERS, KEYSPACE)
+        create_keyspace(KEYSPACE, replication_factor=1, strategy_class='SimpleStrategy')
+        sync_table(avatar.Avatar)
+        sync_table(anchor.Anchor)
+        sync_table(message.Message)
 
     def setUp(self):
         self.app = requests
@@ -96,6 +109,31 @@ class ApiTest(FunctionalTestCase):
         self.assertIsNotNone(xid)
         self.assertIsNotNone(key)
         self.assertIsNotNone(secret)
+
+    def test_generate_new_avatar(self):
+        """
+        I want to generate an avatar from given salt and password without persisting it.
+        :return:
+        """
+        data = {
+            "salt": "test@example.com",
+            "password": "1234"
+        }
+
+        res = self.app.post(HTTP_URL + '/avatars',
+                            headers={'accept': JSON_CONTENT_TYPE},
+                            data=json.dumps(data))
+        self.assertEqual(200, res.status_code)
+        result = res.json()
+        xid = result.get('xid')
+        key = result.get('key')
+        secret = result.get('secret')
+        # print("Secret key: ", secret)
+
+        self.assertIsNotNone(xid)
+        self.assertIsNotNone(key)
+        self.assertIsNotNone(secret)
+        self.assertEqual('9imUtJAndiGUotr6mxjNS3qvFXR3P6aNFMdQ6oJQeUBy', secret)
 
     def test_create_new_avatar(self):
         data = {'xid': self.alice_xid}
