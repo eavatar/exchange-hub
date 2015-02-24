@@ -4,7 +4,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 Avatar-specific functionality.
 """
 
-import json
+import ujson as json
 import logging
 import falcon
 from datetime import datetime
