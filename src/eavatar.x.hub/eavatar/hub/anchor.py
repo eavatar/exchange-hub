@@ -10,6 +10,7 @@ import falcon
 from cqlengine import columns
 from cqlengine.models import Model
 
+from .hooks import check_authentication
 from eavatar.hub.app import api
 from eavatar.hub.managers import BaseManager
 
@@ -60,6 +61,7 @@ class AnchorResource(object):
     def __init__(self, manager):
         self.manager = manager
 
+    @falcon.before(check_authentication)
     def on_get(self, req, resp, avatar_xid, label=""):
         logger.debug("Gets anchor for Avatar: %s with label: %s", avatar_xid, label)
         result = self.manager.find_one(avatar_xid=avatar_xid, label=label)

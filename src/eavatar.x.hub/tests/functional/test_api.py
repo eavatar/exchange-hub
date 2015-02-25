@@ -4,6 +4,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import json
 
 import requests
+from requests.auth import HTTPBasicAuth
 
 from tests.functional.base import FunctionalTestCase
 from cqlengine.management import sync_table, create_keyspace, delete_keyspace, drop_table
@@ -38,13 +39,16 @@ class ApiTest(FunctionalTestCase):
         sync_table(message.Message)
 
     def setUp(self):
-        self.app = requests
+        self.app = requests.Session()
 
     #### Root resource ####
     def test_get_root_resource(self):
         res = self.app.get(HTTP_URL + '/', headers={'accept': JSON_CONTENT_TYPE})
 
         self.assertEqual(200, res.status_code)
+
+        # should return CORS header
+        self.assertEquals(res.headers['Access-Control-Allow-Origin'], '*')
 
     def test_get_home_page(self):
         res = self.app.get(HTTP_URL + '/', headers={'accept': 'text/html'})
@@ -56,7 +60,7 @@ class ApiTest(FunctionalTestCase):
         The API should return OK on checking status.
         :return:
         """
-        res = self.app.get(HTTP_URL + '/status', headers={'accept': JSON_CONTENT_TYPE})
+        res = self.app.get(HTTP_URL + '/.status', headers={'accept': JSON_CONTENT_TYPE})
         self.assertEqual(200, res.status_code)
         self.assertTrue("OK" in res.text)
 
@@ -80,10 +84,14 @@ class ApiTest(FunctionalTestCase):
 
         data = json.dumps(anchor)
 
-        res1 = self.app.put(url, headers={'accept': JSON_CONTENT_TYPE, 'Content-Type': JSON_CONTENT_TYPE}, data=data)
+        res1 = self.app.put(url,
+                            headers={'accept': JSON_CONTENT_TYPE, 'Content-Type': JSON_CONTENT_TYPE},
+                            data=data)
         self.assertEqual(200, res1.status_code)
 
-        res2 = self.app.get(url, headers={'accept': JSON_CONTENT_TYPE})
+        res2 = self.app.get(url,
+                            headers={'accept': JSON_CONTENT_TYPE},
+                            auth=HTTPBasicAuth(self.alice_xid, self.alice_secret))
         self.assertEqual(200, res2.status_code)
         jsonobj = res2.json()
         self.assertEqual("http://www.mocky.io/v2/54dc01b77d28597e102c6468", jsonobj["value"])
@@ -145,7 +153,7 @@ class ApiTest(FunctionalTestCase):
         json_res = res.json()
         self.assertEqual(json_res["result"], "OK")
 
-    def test_send_a_message_to_avatar(self):
+    def test_route_message_to_avatar(self):
         data = {
             "headers": {
                 "Content-type": "text/plain",

@@ -27,9 +27,15 @@ class ResourceBase(object):
         if not req.content_length or req.content_length > limit:
             raise falcon.HTTPBadRequest(title='Bad Request', description='Request exceeded size limit.')
 
+    @staticmethod
+    def get_client_xid(req):
+        return req.context['client_xid']
 
     @staticmethod
-    def get_user(req):
-        return req.context['sub']
+    def raise_internal_server_error(e=None):
+        if e:
+            logger.error(e)
+        raise falcon.HTTPInternalServerError(title="Internal Server Error",
+                                             description="Encountered an internal error!")
 
 

@@ -20,4 +20,4 @@ class StatusResource(views.ResourceBase):
 
 logger.debug("Binding routes for Status module...")
 # routes
-api.add_route("/status", StatusResource())
+api.add_route("/.status", StatusResource())

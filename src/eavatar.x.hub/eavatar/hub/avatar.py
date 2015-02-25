@@ -15,7 +15,7 @@ from eavatar.hub.app import api
 
 from eavatar.hub import views
 from eavatar.hub import managers
-
+from eavatar.hub import hooks
 from eavatar.hub.util import crypto, codecs
 
 logger = logging.getLogger(__name__)
@@ -27,12 +27,12 @@ class Avatar(Model):
     Represents anything with an identity that can send or receive messages.
     """
     xid = columns.Text(primary_key=True, partition_key=True)
-    owner_xid = columns.Text(default=None)  # the avatar who owns this one.
-    parent_xid = columns.Text(default=None)  # the containment relationship.
-    supervisor_xid = columns.Text(default=None)  # the avatar who can manage this one.
     kind = columns.Text(default='thing')
     created_at = columns.DateTime(default=datetime.utcnow)
     modified_at = columns.DateTime(default=datetime.utcnow)
+    content_length = columns.Integer(default=0)
+    content_etag = columns.Text(default=None)
+    content = columns.Text(default="")
 
 
 class AvatarOwner(Model):
@@ -101,7 +101,15 @@ class AvatarResource(views.ResourceBase):
         resp.body = json.dumps(rs[0])
         resp.status = falcon.HTTP_200
 
-    def on_post(self, req, resp, avatar_xid):
+    def on_put(self, req, resp, avatar_xid):
+        data = json.load(req.stream)
+        data["xid"] = avatar_xid
+        avatar = Avatar(xid=data.get('xid'), kind=data.get('kind'))
+        avatar.save()
+        resp.body = views.RESULT_OK
+        resp.status = falcon.HTTP_200
+
+    def on_delete(self, req, resp, avatar_xid):
         pass
 
 

@@ -6,6 +6,29 @@ The application instance
 """
 
 import falcon
+import logging
+from .middlewares import SetCorsHeader
+
+logger = logging.getLogger(__name__)
+
+
+def _generic_error_handler(ex, req, resp, params):
+    """
+    The catch-all error handler.
+
+    :param ex:
+    :param req:
+    :param resp:
+    :param params:
+    :return:
+    """
+    logger.exception(ex)
+    if isinstance(ex, falcon.HTTPError):
+        raise ex
+    raise falcon.HTTPInternalServerError(title="Internal Server Error",
+                                         description="Error occurred")
 
 # The API instance
-api = falcon.API()
+set_cors_header = SetCorsHeader()
+api = falcon.API(middleware=[set_cors_header])
+api.add_error_handler(Exception, _generic_error_handler)
