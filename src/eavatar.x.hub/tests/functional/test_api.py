@@ -20,15 +20,13 @@ HTTPS_URL = 'https://127.0.0.1:8443'
 
 
 class ApiTest(FunctionalTestCase):
-    alice_key = '8fSreudn6GdSiGPh6VDWBuTs7533dMNS2K4wdDBDaXuf'
-    alice_secret = 'EpPFLbF85k73ZoTPMzG2hjJHD8y5WaCqvNzGM6GN7vtD'
-    alice_xid = 'QPndzFJTmycdfg5jxcSghX2scJnc3TNqVEfYtVTA5JVYiPQY'
-    alice_auth = 'EAvatar sub="QPndzFJTmycdfg5jxcSghX2scJnc3TNqVEfYtVTA5JVYiPQY",sig="1234"'
+    alice_key = b"Kb7RAJFh1kmbW3CcdPN1n5TeX9DYN7pYAPy4fAkn4WDxUNh2"
+    alice_secret = b"SXkFv96uDr3bbGNVrJUPaLt6gmxLzsxBwCzxmvjmadyFcutA"
+    alice_xid = b"AWUPe1z13HBTHhPQCwJrR5FyhzCnNSXAzoZ7fyENvh7aruyr"
 
-    bob_key = 'HoTw7v3pvxLiDNAav3ziXR9ipLqkivP8MHbD9jUPsbT'
-    bob_secret = 'GfKydnBomusuQAARppnbg44WbjuY3rAVuX5HBPEKHH6k'
-    bob_xid = 'QMJzoFDsv94hRBs9168ecZVTxxhuKAqGrE3PgkqpdxvpzWxP'
-    bob_auth = 'EAvatar sub="QMJzoFDsv94hRBs9168ecZVTxxhuKAqGrE3PgkqpdxvpzWxP",sig="1234"'
+    bob_key = b"Kaw8YXpmyct3rm8tqeKkjyCc9AtaeyjP9PRR6VxbpecD1xXD"
+    bob_secret = b"SXZD9hr1xjb8BTgqFFGsjJ557B279yBDYjxFHUC4c7fWEqsd"
+    bob_xid = b"AWJ72FZ619HueRKgRCGbNxzwL1spfJS1yo1U7JSCgqVqQg6B"
 
     @classmethod
     def setUpClass(cls):
@@ -37,6 +35,11 @@ class ApiTest(FunctionalTestCase):
         sync_table(avatar.Avatar)
         sync_table(anchor.Anchor)
         sync_table(message.Message)
+
+#    @classmethod
+#    def tearDownClass(cls):
+#        connection.setup(DB_SERVERS, KEYSPACE)
+#        delete_keyspace(KEYSPACE)
 
     def setUp(self):
         self.app = requests.Session()
@@ -62,21 +65,23 @@ class ApiTest(FunctionalTestCase):
         """
         res = self.app.get(HTTP_URL + '/.status', headers={'accept': JSON_CONTENT_TYPE})
         self.assertEqual(200, res.status_code)
-        self.assertTrue("OK" in res.text)
+        self.assertTrue("ok" in res.text)
 
     def test_get_empty_anchor_list(self):
         """
         An empty list should be returned if no anchor found or the avatar doesn't exist.
         :return:
         """
-        url = "%s/avatars/%s/anchors" % (HTTP_URL, self.alice_xid)
-        res = self.app.get(url, headers={'accept': JSON_CONTENT_TYPE})
+        url = "%s/%s/anchors" % (HTTP_URL, self.alice_xid)
+        res = self.app.get(url,
+                           headers={'accept': JSON_CONTENT_TYPE},
+                           auth=HTTPBasicAuth(self.alice_xid, self.alice_secret))
         self.assertEqual(200, res.status_code)
         self.assertEqual([], res.json())
 
     def test_anchor_crud(self):
         label1 = 'a'
-        url = "%s/avatars/%s/anchors/%s" % (HTTP_URL, self.alice_xid, label1)
+        url = "%s/%s/anchors/%s" % (HTTP_URL, self.alice_xid, label1)
         anchor = {
             "label": label1,
             "value": "http://www.mocky.io/v2/54dc01b77d28597e102c6468"
@@ -86,7 +91,8 @@ class ApiTest(FunctionalTestCase):
 
         res1 = self.app.put(url,
                             headers={'accept': JSON_CONTENT_TYPE, 'Content-Type': JSON_CONTENT_TYPE},
-                            data=data)
+                            data=data,
+                            auth=HTTPBasicAuth(self.alice_xid, self.alice_secret))
         self.assertEqual(200, res1.status_code)
 
         res2 = self.app.get(url,
@@ -97,63 +103,37 @@ class ApiTest(FunctionalTestCase):
         self.assertEqual("http://www.mocky.io/v2/54dc01b77d28597e102c6468", jsonobj["value"])
 
         anchor["value"] = "a_url"
-        res3 = self.app.put(url, headers={'accept': JSON_CONTENT_TYPE}, data=json.dumps(anchor))
+        res3 = self.app.put(url,
+                            headers={'accept': JSON_CONTENT_TYPE},
+                            data=json.dumps(anchor),
+                            auth=HTTPBasicAuth(self.alice_xid, self.alice_secret))
         self.assertEqual(200, res3.status_code)
 
-        res4 = self.app.delete(url, headers={'accept': JSON_CONTENT_TYPE})
+        res4 = self.app.delete(url,
+                               headers={'accept': JSON_CONTENT_TYPE},
+                               auth=HTTPBasicAuth(self.alice_xid, self.alice_secret))
         self.assertEqual(204, res4.status_code)
-
-
-    ### keypair resource ###
-    def test_generate_new_key_pair(self):
-        res = self.app.post(HTTP_URL + '/keypair', headers={'accept': JSON_CONTENT_TYPE})
-        self.assertEqual(200, res.status_code)
-        result = res.json()
-        xid = result.get('xid')
-        key = result.get('key')
-        secret = result.get('secret')
-        #print("Secret key: ", secret)
-
-        self.assertIsNotNone(xid)
-        self.assertIsNotNone(key)
-        self.assertIsNotNone(secret)
-
-    def test_generate_new_avatar(self):
-        """
-        I want to generate an avatar from given salt and password without persisting it.
-        :return:
-        """
-        data = {
-            "salt": "test@example.com",
-            "password": "1234"
-        }
-
-        res = self.app.post(HTTP_URL + '/avatars',
-                            headers={'accept': JSON_CONTENT_TYPE},
-                            data=json.dumps(data))
-        self.assertEqual(200, res.status_code)
-        result = res.json()
-        xid = result.get('xid')
-        key = result.get('key')
-        secret = result.get('secret')
-        # print("Secret key: ", secret)
-
-        self.assertIsNotNone(xid)
-        self.assertIsNotNone(key)
-        self.assertIsNotNone(secret)
-        self.assertEqual('9imUtJAndiGUotr6mxjNS3qvFXR3P6aNFMdQ6oJQeUBy', secret)
 
     def test_create_new_avatar(self):
         data = {'xid': self.alice_xid}
-        url = "%s/avatars" % HTTP_URL
+        url = "%s/%s" % (HTTP_URL, self.alice_xid)
         res = self.app.put(url,
                            headers={'content-type': 'application/json'},
-                           data=json.dumps(data))
+                           data=json.dumps(data),
+                           auth=HTTPBasicAuth(self.alice_xid, self.alice_secret))
         self.assertEqual(200, res.status_code)
         json_res = res.json()
-        self.assertEqual(json_res["result"], "OK")
+        self.assertEqual(json_res["result"], "ok")
 
-    def test_route_message_to_avatar(self):
+    def test_get_messages(self):
+        url = "%s/self/messages" % (HTTP_URL,)
+        res = self.app.get(url,
+                           headers={'content-type': 'application/json'},
+                           auth=HTTPBasicAuth(self.alice_xid, self.alice_secret))
+
+        self.assertTrue(200, res.status_code)
+
+    def test_send_message_to_avatar(self):
         data = {
             "headers": {
                 "Content-type": "text/plain",
@@ -163,7 +143,44 @@ class ApiTest(FunctionalTestCase):
         }
 
         json_data = json.dumps(data)
-
-        res = self.app.post(HTTP_URL + '/route/' + self.alice_xid,
-                            data=json_data)
+        url = "%s/%s/messages" % (HTTP_URL, self.bob_xid)
+        res = self.app.post(url,
+                            headers={'content-type': 'application/json'},
+                            data=json_data,
+                            auth=HTTPBasicAuth(self.alice_xid, self.alice_secret))
         self.assertEqual(res.status_code, 200)
+        res2 = self.app.get(url,
+                            headers={'content-type': 'application/json'},
+                            auth=HTTPBasicAuth(self.alice_xid, self.alice_secret))
+        self.assertEqual(200, res.status_code)
+        data = res2.json()
+        print(data)
+        self.assertTrue(len(data) > 0)
+
+    def test_send_message_to_self(self):
+        data = {
+            "headers": {
+                "Content-type": "text/plain",
+                "Content-length": 7,
+            },
+            "payload": "hello"
+        }
+
+        json_data = json.dumps(data)
+        url = "%s/self/messages" % (HTTP_URL,)
+        res = self.app.post(url,
+                            headers={'content-type': 'application/json'},
+                            data=json_data,
+                            auth=HTTPBasicAuth(self.alice_xid, self.alice_secret))
+        self.assertEqual(res.status_code, 200)
+        data1 = res.json()
+        print("New msg ID: ", data1["message_id"])
+
+        res2 = self.app.get(url,
+                            headers={'content-type': 'application/json'},
+                            auth=HTTPBasicAuth(self.alice_xid, self.alice_secret))
+        self.assertEqual(200, res.status_code)
+        data2 = res2.json()
+        print(data2)
+        self.assertTrue(len(data2) > 0)
+

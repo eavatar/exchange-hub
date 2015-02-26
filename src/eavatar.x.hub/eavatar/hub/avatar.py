@@ -5,9 +5,10 @@ Avatar-specific functionality.
 """
 
 import json
+import time
 import logging
 import falcon
-from datetime import datetime
+from datetime import datetime, timedelta
 from cqlengine import columns
 from cqlengine.models import Model
 
@@ -15,10 +16,14 @@ from eavatar.hub.app import api
 
 from eavatar.hub import views
 from eavatar.hub import managers
-from eavatar.hub import hooks
+from eavatar.hub.hooks import check_authentication
 from eavatar.hub.util import crypto, codecs
 
 logger = logging.getLogger(__name__)
+
+
+def _default_expired_at():
+    return datetime.utcnow() + timedelta(seconds=86400)
 
 
 # models #
@@ -27,20 +32,25 @@ class Avatar(Model):
     Represents anything with an identity that can send or receive messages.
     """
     xid = columns.Text(primary_key=True, partition_key=True)
-    kind = columns.Text(default='thing')
+    owner_xid = columns.Text(default=None)
     created_at = columns.DateTime(default=datetime.utcnow)
     modified_at = columns.DateTime(default=datetime.utcnow)
-    content_length = columns.Integer(default=0)
-    content_etag = columns.Text(default=None)
-    content = columns.Text(default="")
+    expired_at = columns.DateTime(default=_default_expired_at)
+#    properties = columns.Map(columns.Text, columns.Text)
+#    links = columns.Set(columns.Text)
+#    aliases = columns.Set(columns.Text)
 
 
-class AvatarOwner(Model):
+class Possession(Model):
     """
-    Represents relationship between an avatar and its owner.
+    Represents relationship between an avatar and its possessions.
     """
     owner_xid = columns.Text(primary_key=True)
     avatar_xid = columns.Text(primary_key=True, clustering_order="ASC")
+
+    @staticmethod
+    def find_possessions(owner_xid):
+        return Possession.objects(owner_xid=owner_xid)
 
 
 # managers #
@@ -52,31 +62,19 @@ class AvatarManager(managers.BaseManager):
 
 
 # views #
+@falcon.before(check_authentication)
 class AvatarCollection(views.ResourceBase):
     def on_get(self, req, resp):
-        resp.body = views.EMPTY_LIST
-        resp.status = falcon.HTTP_200
-
-    def on_post(self, req, resp):
         """
-        Generates new Avatar without keep it in database.
+        Gets avatars belongs to the client.
+
         :param req:
         :param resp:
         :return:
         """
-        jsonobj = json.load(req.stream)
-        salt = str(jsonobj["salt"])
-        password = str(jsonobj["password"])
-        logger.debug("Generating new avatar from salt: %s, password: %s", salt, password)
-
-        seed = crypto.derive_secret_key(password=password, salt=salt)
-        (pk, sk) = crypto.generate_keypair(sk=seed)
-        result = dict()
-        result["xid"] = crypto.key_to_xid(pk)
-        result["key"] = codecs.base58_encode(pk)
-        result["secret"] = codecs.base58_encode(sk)
-
-        resp.body = json.dumps(result)
+        owner_xid = req.context['client_xid']
+        qs = Possession.find_possessions(owner_xid)
+        resp.body = views.EMPTY_LIST
         resp.status = falcon.HTTP_200
 
     def on_put(self, req, resp):
@@ -91,9 +89,13 @@ class AvatarCollection(views.ResourceBase):
             raise
 
 
+@falcon.before(check_authentication)
 class AvatarResource(views.ResourceBase):
 
     def on_get(self, req, resp, avatar_xid):
+        if 'self' == avatar_xid:
+            avatar_xid = req.context['client_xid']
+
         rs = Avatar.objects(xid=avatar_xid).limit(1)
         if len(rs) == 0:
             raise falcon.HTTPNotFound
@@ -101,19 +103,51 @@ class AvatarResource(views.ResourceBase):
         resp.body = json.dumps(rs[0])
         resp.status = falcon.HTTP_200
 
+    def on_patch(self, req, resp, avatar_xid):
+        """
+        Patches the avatar.
+
+        :param req:
+        :param resp:
+        :param avatar_xid:
+        :return:
+        """
+        if 'self' == avatar_xid:
+            avatar_xid = req.context['client_xid']
+
+
     def on_put(self, req, resp, avatar_xid):
+        """
+        Replaces the avatar with new content.
+
+        :param req:
+        :param resp:
+        :param avatar_xid:
+        :return:
+        """
+        client_xid = req.context['client_xid']
+        if 'self' == avatar_xid:
+            avatar_xid = client_xid
+
         data = json.load(req.stream)
         data["xid"] = avatar_xid
-        avatar = Avatar(xid=data.get('xid'), kind=data.get('kind'))
+        avatar = Avatar(xid=data.get('xid'), owner_xid=client_xid)
         avatar.save()
         resp.body = views.RESULT_OK
         resp.status = falcon.HTTP_200
 
     def on_delete(self, req, resp, avatar_xid):
-        pass
+        if 'self' == avatar_xid:
+            avatar_xid = req.context['client_xid']
+
+        Avatar.objects(avatar_xid=avatar_xid).delete()
+        resp.status = falcon.HTTP_204
+
 
 
 # routes
+
 logger.debug("Binding routes for Avatar module.")
-api.add_route("/avatars", AvatarCollection())
-api.add_route("/avatars/{avatar_xid}", AvatarResource())
+
+_avatar_resource = AvatarResource()
+api.add_route("/{avatar_xid}", _avatar_resource)

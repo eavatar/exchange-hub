@@ -11,12 +11,12 @@ import json
 from eavatar.hub.app import api
 
 from eavatar.hub import views
-from eavatar.hub import util
+from eavatar.hub.util import crypto, codecs
 
 logger = logging.getLogger(__name__)
 
 
-class KeypairResource(views.ResourceBase):
+class AuthResource(views.ResourceBase):
 
     def on_post(self, req, resp):
         """
@@ -25,15 +25,22 @@ class KeypairResource(views.ResourceBase):
         :param resp:
         :return:
         """
-        key, secret = util.crypto.generate_keypair()
-        result = {}
-        result['key'] = base58.b58encode(key)
-        result['secret'] = base58.b58encode(secret)
-        result['xid'] = util.crypto.key_to_xid(key)
+        jsonobj = json.load(req.stream)
+        salt = str(jsonobj["salt"])
+        password = str(jsonobj["password"])
+        logger.debug("Generating new avatar from salt: %s, password: %s", salt, password)
+
+        seed = crypto.derive_secret_key(password=password, salt=salt)
+        (pk, sk) = crypto.generate_keypair(sk=seed)
+        result = dict()
+        result["xid"] = crypto.key_to_xid(pk)
+        result["key"] = codecs.base58_encode(pk)
+        result["secret"] = codecs.base58_encode(sk)
+
         resp.body = json.dumps(result)
         resp.status = falcon.HTTP_200
 
 
 logger.debug("Binding routes for Auth module...")
 # routes
-api.add_route("/keypair", KeypairResource())
+api.add_route("/key", AuthResource())

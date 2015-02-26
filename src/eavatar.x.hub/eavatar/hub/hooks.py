@@ -8,13 +8,14 @@ import binascii
 import logging
 import falcon
 import six
-from eavatar.hub.conf import AUTHENTICATION_HEADER, AUTHENTICATION_SCHEME
-from eavatar.hub.util import webutils, crypto
+import jwt
+from eavatar.hub.conf import AUTHENTICATION_HEADER, TOKEN_SECRET
+from eavatar.hub.util import crypto
 
 logger = logging.getLogger(__name__)
 
 
-def _raise_unauthorized(title='Authentication required', desc='HTTP basic authentication scheme.'):
+def _raise_unauthorized(title=b'Authentication required', desc=b'HTTP basic authentication scheme.'):
     raise falcon.HTTPUnauthorized(title=title,
                                   description=desc,
                                   scheme=AUTHENTICATION_HEADER)
@@ -44,12 +45,22 @@ def check_authentication(req, resp, resource, params):
         logger.debug(msg)
         _raise_unauthorized(desc=msg)
 
-    if auth_type.lower() == six.b('basic'):
+    auth_type = auth_type.lower()
+    if auth_type == six.b('basic'):
         try:
             user_and_key = user_and_key.strip()
             user_and_key = binascii.a2b_base64(user_and_key)
             user_id, key = user_and_key.split(six.b(':'), 1)
-            # TODO: verify key here
+
+            logger.debug("user_id: %s", user_id)
+
+            if not crypto.validate_xid(user_id):
+                _raise_unauthorized()
+
+            xid = crypto.secret_key_to_xid(key)
+            if xid != user_id:
+                _raise_unauthorized()
+
             req.context['client_xid'] = user_id
             logger.debug("Client authenticated: %s", user_id)
             return
@@ -58,6 +69,20 @@ def check_authentication(req, resp, resource, params):
                    "Got error: {0}").format(str(err))
             logger.debug(msg)
             _raise_unauthorized(desc=msg)
+
+    if auth_type == six.b("bearer"):
+        try:
+            token = jwt.decode(user_and_key, TOKEN_SECRET, "HS256")
+        except jwt.DecodeError:
+            token = {}
+            _raise_unauthorized()
+
+        client_xid = token.get("sub")
+        if not client_xid:
+            _raise_unauthorized(desc="Subject not specified in token.")
+
+        if not crypto.validate_xid(client_xid):
+            _raise_unauthorized()
 
     _raise_unauthorized()
 

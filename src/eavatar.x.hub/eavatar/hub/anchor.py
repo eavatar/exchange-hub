@@ -35,6 +35,7 @@ class AnchorManager(BaseManager):
         super(AnchorManager, self).__init__(Anchor)
 
 
+@falcon.before(check_authentication)
 class AnchorStore(object):
 
     def __init__(self, manager):
@@ -56,12 +57,12 @@ class AnchorStore(object):
         resp.status = falcon.HTTP_204
 
 
+@falcon.before(check_authentication)
 class AnchorResource(object):
 
     def __init__(self, manager):
         self.manager = manager
 
-    @falcon.before(check_authentication)
     def on_get(self, req, resp, avatar_xid, label=""):
         logger.debug("Gets anchor for Avatar: %s with label: %s", avatar_xid, label)
         result = self.manager.find_one(avatar_xid=avatar_xid, label=label)
@@ -86,5 +87,5 @@ class AnchorResource(object):
 _manager = AnchorManager()
 
 # routes
-api.add_route("/avatars/{avatar_xid}/anchors", AnchorStore(_manager))
-api.add_route("/avatars/{avatar_xid}/anchors/{label}", AnchorResource(_manager))
+api.add_route("/{avatar_xid}/anchors", AnchorStore(_manager))
+api.add_route("/{avatar_xid}/anchors/{label}", AnchorResource(_manager))

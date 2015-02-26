@@ -60,6 +60,10 @@ import libnacl.secret
 # pyscrypt
 import pyscrypt
 
+# jwt
+import jwt
+from jwt.api import encode, decode, load, register_algorithm
+
 # app packages
 import eavatar.hub
 import eavatar.hub.util

@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 ENCODING = 'utf-8'
 
-RESULT_OK = '{"result": "OK"}'
+RESULT_OK = '{"result": "ok"}'
 EMPTY_LIST = '[]'
 
 

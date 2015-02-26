@@ -14,14 +14,13 @@ from cqlengine import connection
 
 from eavatar.hub.app import api
 
+# order does matter for the imports
 from eavatar.hub import (
-    webroot,
-    status,
     avatar,
     anchor,
     message,
-    router,
-    auth,
+    status,
+    webroot,
 )
 
 

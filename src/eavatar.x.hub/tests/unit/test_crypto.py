@@ -111,3 +111,27 @@ class CryptoTest(unittest.TestCase):
 
         fp = crypto.key_to_fingerprint(pk)
         print("FP: ", fp, ", len: ", len(fp))
+
+    def test_convert_key_to_xid_back_and_forth(self):
+        keypair = libnacl.public.SecretKey()
+        xid = crypto.key_to_xid(keypair.pk)
+        print(xid)
+        self.assertTrue(crypto.validate_xid(xid))
+        pk = crypto.xid_to_key(xid)
+        self.assertEqual(keypair.pk, pk)
+
+    def test_convert_key_to_string_back_and_forth(self):
+        keypair = libnacl.public.SecretKey()
+        pk_str = crypto.key_to_string(keypair.pk)
+        # print(pk_str)
+        self.assertTrue(crypto.validate_key_string(pk_str))
+        pk = crypto.string_to_key(pk_str)
+        self.assertEqual(keypair.pk, pk)
+
+    def test_convert_secret_to_string_back_and_forth(self):
+        keypair = libnacl.public.SecretKey()
+        sk_str = crypto.secret_to_string(keypair.sk)
+        # print(sk_str)
+        self.assertTrue(crypto.validate_secret_string(sk_str))
+        sk = crypto.string_to_secret(sk_str)
+        self.assertEqual(keypair.sk, sk)
