@@ -14,11 +14,11 @@ class JWTTest(unittest.TestCase):
 
 
         data = dict(
-            sub='1234',
+            sub=xid,
 
         )
         tok = token.encode(data, secret)
         print(tok)
         decoded_data = token.decode(tok, key=key, verify=True)
         print(decoded_data)
-        self.assertEqual('1234', decoded_data['sub'])
+        self.assertEqual(xid, decoded_data['sub'])
