@@ -40,6 +40,14 @@ class CryptoTest(unittest.TestCase):
         self.assertEqual(bclear, aclear)
         self.assertEqual(bclear, msg)
 
+    def test_public_key_encryption_util(self):
+        alice = crypto.generate_keypair()
+        bob = crypto.generate_keypair()
+
+        ciphertext = crypto.public_key_encrypt(alice[1], bob[0], "hello")
+        plaintext = crypto.public_key_decrypt(bob[1], alice[0], ciphertext)
+        self.assertEqual("hello", plaintext)
+
     def test_secret_key_encryption(self):
         msg = b'But then of course African swallows are not migratory.'
         # Create a SecretBox object, if not passed in the secret key is

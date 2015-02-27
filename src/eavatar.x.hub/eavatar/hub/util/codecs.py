@@ -15,7 +15,7 @@ def base64url_encode(src):
     :param src:
     :return:
     """
-    return base64.urlsafe_b64encode(src).replace('=','')
+    return base64.urlsafe_b64encode(src).replace(b'=', b'')
 
 
 def base64url_decode(src):
@@ -25,7 +25,7 @@ def base64url_decode(src):
     :param src:
     :return:
     """
-    return base64.urlsafe_b64decode(src + '=' * (len(src) % 4))
+    return base64.urlsafe_b64decode(src + b'=' * (len(src) % 4))
 
 
 def base58_encode(v):
@@ -33,4 +33,4 @@ def base58_encode(v):
 
 
 def base58_decode(v):
-    return base58.b58decode()
+    return base58.b58decode(v)

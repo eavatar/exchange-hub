@@ -1,5 +1,4 @@
 Cython==0.22
-PyJWT==0.4.3
 PyYAML==3.11
 argparse==1.2.1
 base58==0.2.1

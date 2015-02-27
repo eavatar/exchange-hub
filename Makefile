@@ -6,6 +6,7 @@ all: build tag
 	
 
 runtime: src/eavatar.x.runtime/Makefile
+	cp requirements.txt src/eavatar.x.runtime/overlayfs/
 	cd src/eavatar.x.runtime && make clean all
 
 build: Dockerfile

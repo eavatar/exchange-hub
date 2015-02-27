@@ -10,9 +10,9 @@ VERSION_STRING = "0.1.0"
 AUTHENTICATION_SCHEME = b'Basic'
 
 # the base58-encoded keys for the EAvatar network.
-NETWORK_SECRET = b"6cQaJceBk3HxyzwV7efMhHEGDm1JfbLtW3wwc3t5X56s"
-NETWORK_KEY = b"H1QX5k1yuDffJEDAkJJi5frh4AUbkiQRWTPpBnGe3tua"
-NETWORK_XID = b"QSbCHL9ehEAWj58Z7juTXgNawyQgEwY4naVu9bEEaetwwKgq"
+NETWORK_SECRET = b"SYWYv2pVzH9U3YPVBHNBJVG8vQ47spKLowTpkAi5NSr9JB7S"
+NETWORK_KEY = b"KZsf2cYhvu4enzgCe7ei4RvVnSKjiE5E7UYzNZsW58uQBcnk"
+NETWORK_XID = b"AVEdWLH1xRUWaerzDfbYhRipyHJyiYmrwt93PNM6wKo2aSvf"
 
 # the secret for pre-encrypting JWTs.
 TOKEN_SECRET = b"avatoken"
