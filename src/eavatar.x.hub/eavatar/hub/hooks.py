@@ -8,7 +8,6 @@ import binascii
 import logging
 import falcon
 import six
-import jwt
 from eavatar.hub.conf import AUTHENTICATION_HEADER, TOKEN_SECRET
 from eavatar.hub.util import crypto
 
