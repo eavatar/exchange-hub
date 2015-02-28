@@ -32,3 +32,12 @@ def _generic_error_handler(ex, req, resp, params):
 set_cors_header = SetCorsHeader()
 api = falcon.API(middleware=[set_cors_header])
 api.add_error_handler(Exception, _generic_error_handler)
+
+
+# shortcuts
+def add_route(uri_template, resource):
+    api.add_route(uri_template, resource)
+
+
+def add_sink(sink, prefix="/"):
+    api.add_sink(sink, prefix)

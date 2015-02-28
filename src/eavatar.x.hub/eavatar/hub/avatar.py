@@ -96,54 +96,25 @@ class AvatarResource(views.ResourceBase):
         if 'self' == avatar_xid:
             avatar_xid = req.context['client_xid']
 
-        rs = Avatar.objects(xid=avatar_xid).limit(1)
-        if len(rs) == 0:
-            raise falcon.HTTPNotFound
+        self_link = {
+            "rel": "self",
+            "href": "%s" % (req.uri,)
+        }
 
-        resp.body = json.dumps(rs[0])
+        messages_link = {
+            "rel": "messages",
+            "href": "%s/messages" % (req.uri,),
+        }
+
+        result = dict(
+            subject="%s" % (req.uri,),
+            aliases=["avatar:%s" % avatar_xid],
+            links=[self_link, messages_link],
+        )
+
+        resp.content_type = b"application/jrd+json"
+        resp.data = json.dumps(result)
         resp.status = falcon.HTTP_200
-
-    def on_patch(self, req, resp, avatar_xid):
-        """
-        Patches the avatar.
-
-        :param req:
-        :param resp:
-        :param avatar_xid:
-        :return:
-        """
-        if 'self' == avatar_xid:
-            avatar_xid = req.context['client_xid']
-
-
-    def on_put(self, req, resp, avatar_xid):
-        """
-        Replaces the avatar with new content.
-
-        :param req:
-        :param resp:
-        :param avatar_xid:
-        :return:
-        """
-        client_xid = req.context['client_xid']
-        if 'self' == avatar_xid:
-            avatar_xid = client_xid
-
-        data = json.load(req.stream)
-        data["xid"] = avatar_xid
-        avatar = Avatar(xid=data.get('xid'), owner_xid=client_xid)
-        avatar.save()
-        resp.body = views.RESULT_OK
-        resp.status = falcon.HTTP_200
-
-    def on_delete(self, req, resp, avatar_xid):
-        if 'self' == avatar_xid:
-            avatar_xid = req.context['client_xid']
-
-        Avatar.objects(avatar_xid=avatar_xid).delete()
-        resp.status = falcon.HTTP_204
-
-
 
 # routes
 

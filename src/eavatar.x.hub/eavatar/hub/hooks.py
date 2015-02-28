@@ -110,13 +110,13 @@ def check_avatar(req, resp, resource, params):
         raise falcon.HTTPNotFound()
 
 
-def nocache(req, resp, resource, params):
+def nocache(req, resp, resource):
     resp.set_header(b'pragma', b'no-cache')
     resp.set_header(b'cache-control', b'no-cache')
 
 
-def static_cacheable(req, resp, resource, params):
-    resp.set_header(six.b('cache-control'), six.b('max-age=86400,s-maxage=86400'))
+def static_cacheable(req, resp, resource):
+    resp.set_header(b'cache-control', b'max-age=86400,s-maxage=86400')
 
 
 def set_cors_header(req, resp, resource, params):

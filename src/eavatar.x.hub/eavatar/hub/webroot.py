@@ -37,7 +37,7 @@ class FaviconResource(object):
         super(FaviconResource, self).__init__(*args, **kwargs)
 
     def on_get(self, req, resp):
-        util.webutils.send_static_file(req, resp, 'favicon.ico', media_type=b'image/vnd.microsoft.icon')
+        util.webutils.send_static_file(req, resp, b'favicon.ico', media_type=b'image/vnd.microsoft.icon')
 
 
 

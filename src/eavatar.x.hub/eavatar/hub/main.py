@@ -20,6 +20,7 @@ from eavatar.hub import (
     anchor,
     message,
     status,
+    webfinger,
     webroot,
 )
 
