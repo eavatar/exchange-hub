@@ -46,8 +46,10 @@ class ExpiredSignatureError(ValueError):
 
 def sign(msg, issuer_sk, audience_pk):
     if isinstance(issuer_sk, string_types):
+        logger.debug("issuer_sk: %s", issuer_sk)
         issuer_sk = string_to_secret(issuer_sk)
     if isinstance(audience_pk, string_types):
+        logger.debug("audience_pk: %s", audience_pk)
         audience_pk = string_to_key(audience_pk)
 
     h = sha256(msg).digest()
@@ -56,9 +58,10 @@ def sign(msg, issuer_sk, audience_pk):
 
 
 def _verify(msg, issuer_pk, audience_sk, sig):
-    if isinstance(issuer_pk, text_type):
-        issuer_pk = string_to_key(issuer_pk)
+#    if isinstance(issuer_pk, text_type):
+#        issuer_pk = string_to_key(issuer_pk)
     if isinstance(audience_sk, string_types):
+        logger.debug("audience_sk: %s", audience_sk)
         audience_sk = string_to_secret(audience_sk)
 
     hashval = sha256(msg).digest()
@@ -111,6 +114,8 @@ def decode(tok, audience_sk, verify=True, **kwargs):
 
 def verify_signature(payload, signing_input, header, signature, audience_sk,
                      verify_expiration=True, leeway=0, audience=None):
+    logger.debug("audience_sk: %s", audience_sk)
+
     if isinstance(leeway, timedelta):
         leeway = timedelta_total_seconds(leeway)
 

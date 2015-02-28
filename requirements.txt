@@ -8,7 +8,7 @@ cffi==0.8.6
 coverage==3.7.1
 cqlengine==0.21.0
 cryptography==0.7.2
-falcon==0.2.0b2
+falcon==0.2
 futures==2.2.0
 gevent==1.0.1
 gevent-websocket==0.9.3

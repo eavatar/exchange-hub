@@ -8,8 +8,8 @@ import binascii
 import logging
 import falcon
 import six
-from eavatar.hub.conf import AUTHENTICATION_HEADER, TOKEN_SECRET
-from eavatar.hub.util import crypto
+from eavatar.hub.conf import AUTHENTICATION_HEADER, NETWORK_SECRET
+from eavatar.hub.util import crypto, token
 
 logger = logging.getLogger(__name__)
 
@@ -69,21 +69,23 @@ def check_authentication(req, resp, resource, params):
             logger.debug(msg)
             _raise_unauthorized(desc=msg)
 
-    if auth_type == six.b("bearer"):
+    elif auth_type == six.b("bearer"):
         try:
-            token = jwt.decode(user_and_key, TOKEN_SECRET, "HS256")
-        except jwt.DecodeError:
-            token = {}
+            tok = token.decode(user_and_key, NETWORK_SECRET, verify=True)
+        except token.DecodeError:
+            logger.debug("Token decode error", exc_info=True)
+            tok = {}
             _raise_unauthorized()
 
-        client_xid = token.get("sub")
+        client_xid = tok.get("sub")
         if not client_xid:
             _raise_unauthorized(desc="Subject not specified in token.")
 
         if not crypto.validate_xid(client_xid):
             _raise_unauthorized()
-
-    _raise_unauthorized()
+        req.context['client_xid'] = client_xid
+    else:
+        _raise_unauthorized("Unsupported authentication method: %s" % auth_type)
 
 
 def check_owner(req, resp, resource, params):

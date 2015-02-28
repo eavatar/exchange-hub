@@ -12,6 +12,9 @@ from eavatar.hub import avatar, message, anchor
 
 from cqlengine import connection
 from settings import KEYSPACE, DB_SERVERS
+from eavatar.hub.util import token
+from eavatar.hub.conf import NETWORK_KEY
+
 
 JSON_CONTENT_TYPE = 'application/json; charset=utf-8'
 
@@ -67,7 +70,18 @@ class ApiTest(FunctionalTestCase):
         self.assertEqual(200, res.status_code)
         self.assertTrue("ok" in res.text)
 
-    def test_get_empty_anchor_list(self):
+    def test_bearer_token_authentication_should_be_supported(self):
+        url = "%s/self/anchors" % (HTTP_URL, )
+        payload = dict(
+            sub=self.alice_xid,
+        )
+        tok = token.encode(payload, self.alice_secret, NETWORK_KEY)
+        bearer = b"Bearer %s" % tok
+        res = self.app.get(url,
+                           headers={b'accept': JSON_CONTENT_TYPE, b'Authorization': bearer})
+        self.assertEqual(200, res.status_code)
+
+    def test_empty_list_should_returned_when_no_anchor(self):
         """
         An empty list should be returned if no anchor found or the avatar doesn't exist.
         :return:
@@ -125,7 +139,7 @@ class ApiTest(FunctionalTestCase):
         json_res = res.json()
         self.assertEqual(json_res["result"], "ok")
 
-    def test_get_messages(self):
+    def test_can_get_self_messages(self):
         url = "%s/self/messages" % (HTTP_URL,)
         res = self.app.get(url,
                            headers={'content-type': 'application/json'},
@@ -133,7 +147,7 @@ class ApiTest(FunctionalTestCase):
 
         self.assertTrue(200, res.status_code)
 
-    def test_send_message_to_avatar(self):
+    def test_can_send_message_to_avatar(self):
         data = {
             "headers": {
                 "Content-type": "text/plain",
@@ -151,13 +165,20 @@ class ApiTest(FunctionalTestCase):
         self.assertEqual(res.status_code, 200)
         res2 = self.app.get(url,
                             headers={'content-type': 'application/json'},
-                            auth=HTTPBasicAuth(self.alice_xid, self.alice_secret))
-        self.assertEqual(200, res.status_code)
+                            auth=HTTPBasicAuth(self.bob_xid, self.bob_secret))
+        self.assertEqual(200, res2.status_code)
         data = res2.json()
-        print(data)
+        # print(data)
         self.assertTrue(len(data) > 0)
 
-    def test_send_message_to_self(self):
+    def test_cannot_retrieve_others_messages(self):
+        url = "%s/%s/messages" % (HTTP_URL, self.bob_xid)
+        res = self.app.get(url,
+                           headers={'content-type': 'application/json'},
+                           auth=HTTPBasicAuth(self.alice_xid, self.alice_secret))
+        self.assertEqual(403, res.status_code)
+
+    def test_can_send_message_to_self(self):
         data = {
             "headers": {
                 "Content-type": "text/plain",
@@ -174,13 +195,13 @@ class ApiTest(FunctionalTestCase):
                             auth=HTTPBasicAuth(self.alice_xid, self.alice_secret))
         self.assertEqual(res.status_code, 200)
         data1 = res.json()
-        print("New msg ID: ", data1["message_id"])
+        # print("New msg ID: ", data1["message_id"])
 
         res2 = self.app.get(url,
                             headers={'content-type': 'application/json'},
                             auth=HTTPBasicAuth(self.alice_xid, self.alice_secret))
         self.assertEqual(200, res.status_code)
         data2 = res2.json()
-        print(data2)
+        # print(data2)
         self.assertTrue(len(data2) > 0)
 

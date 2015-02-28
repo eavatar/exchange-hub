@@ -72,6 +72,7 @@ class MessageStore(ResourceBase):
             avatar_xid = client_xid
 
         if client_xid != avatar_xid:
+            logger.debug("Access denied: client_xid: %s, avatar_xid: %s", client_xid, avatar_xid)
             raise falcon.HTTPForbidden(title="Forbidden", description="Can only retrieve own messages.")
 
         marker = req.get_param('marker')
