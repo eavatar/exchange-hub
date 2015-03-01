@@ -21,7 +21,7 @@ dependencies:
 
 test:
   override:
-    - bin/py.test -vvv src/eavatar.x.hub/tests/unit/
+    - bin/py.test -vvv --junitxml=$CIRCLE_TEST_REPORTS/unittests.xml src/eavatar.x.hub/tests/unit/
     - docker-compose up -d
     - bin/py.test -vvv src/eavatar.x.hub/tests/integration/
     - bin/py.test -vvv src/eavatar.x.hub/tests/functional/
