@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import (absolute_import, division,
+                        print_function, unicode_literals)
 
 import json
 
@@ -18,7 +19,8 @@ class ApiTest(FunctionalTestCase):
 
     #### Root resource ####
     def test_get_root_resource(self):
-        res = self.app.get(self.HTTP_URL + '/', headers={'accept': self.JSON_CONTENT_TYPE})
+        res = self.app.get(self.HTTP_URL + '/',
+                           headers={'accept': self.JSON_CONTENT_TYPE})
 
         self.assertEqual(200, res.status_code)
 
@@ -35,7 +37,8 @@ class ApiTest(FunctionalTestCase):
         The API should return OK on checking status.
         :return:
         """
-        res = self.app.get(self.HTTP_URL + '/.status', headers={'accept': self.JSON_CONTENT_TYPE})
+        res = self.app.get(self.HTTP_URL + '/.status',
+                           headers={'accept': self.JSON_CONTENT_TYPE})
         self.assertEqual(200, res.status_code)
         self.assertTrue("ok" in res.text)
 
@@ -47,7 +50,8 @@ class ApiTest(FunctionalTestCase):
         tok = token.encode(payload, self.alice_secret, NETWORK_KEY)
         bearer = b"Bearer %s" % tok
         res = self.app.get(url,
-                           headers={b'accept': self.JSON_CONTENT_TYPE, b'Authorization': bearer})
+                           headers={b'accept': self.JSON_CONTENT_TYPE,
+                                    b'Authorization': bearer})
         self.assertEqual(200, res.status_code)
 
     def test_can_get_avatar_by_xid(self):
@@ -62,7 +66,8 @@ class ApiTest(FunctionalTestCase):
 
     def test_empty_list_should_returned_when_no_anchor(self):
         """
-        An empty list should be returned if no anchor found or the avatar doesn't exist.
+        An empty list should be returned if no anchor found or the avatar
+        doesn't exist.
         :return:
         """
         url = "%s/%s/anchors" % (self.HTTP_URL, self.alice_xid)

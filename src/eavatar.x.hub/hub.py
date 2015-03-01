@@ -1,39 +1,31 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
 """
 Acts as the entry-point if the program is not started from the runtime.
 """
-
-from gevent import monkey
-monkey.patch_all()
-
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 import sys
 import logging
-
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(name)s - %(message)s',)
-
-
-logger = logging.getLogger("main")
-
-
-class Hub(object):
-
-    def run(self):
-        try:
-            from eavatar.hub.main import Main
-
-            main = Main()
-            main.run()
-        except KeyboardInterrupt:
-            sys.exit(0)
+from gevent import monkey
+monkey.patch_all()
 
 
 def main():
     """
-     Application entry-pont
+     Application entry-point
     """
-    hub = Hub()
-    hub.run()
+    log_format = '%(asctime)s - %(levelname)s - %(name)s - %(message)s'
+    logging.basicConfig(level=logging.DEBUG, format=log_format,)
+    logger = logging.getLogger("main")
+
+    try:
+        from eavatar.hub.main import Main
+
+        launcher = Main()
+        launcher.run()
+    except KeyboardInterrupt:
+        logger.debug("Stopping Hub")
+        sys.exit(0)
 
 
 if __name__ == '__main__':
