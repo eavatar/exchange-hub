@@ -1,19 +1,24 @@
 haproxy:
-    image: eavatar/haproxy
+    image: eavatar/haproxy-consul
     ports:
     - "8080:80"
     - "8443:443"
     links:
-    - "hub:webapp"
+    - "consul:consul"
+#    - "hub:webapp"
+
 
 hub:
     image: eavatar/hub-runtime
     volumes:
     - "src/eavatar.x.hub:/app/code/"
     ports:
-    - "5000:5000"
+    - "5000"
     links:
     - "cassandra:cass1"
+    environment:
+    - "SERVICE_NAME=web"
+    - "SERVICE_TAGS=release"
 
 cassandra:
     image: eavatar/cassandra-single
@@ -26,10 +31,19 @@ cassandra:
 
 consul:
     image: eavatar/consul
-    command: "-server -bootstrap"
+    command: "-server -bootstrap -ui-dir /ui -advertise 192.168.1.103"
+    hostname: node1
     ports:
     - "8400:8400"
     - "8500:8500"
     - "8600:53/udp"
-    hostname: node1
+
+registrator:
+    image: gliderlabs/registrator
+    command: "consul://consul:8500"
+    hostname: dockerhost
+    volumes:
+    - "/var/run/docker.sock:/tmp/docker.sock"
+    links:
+    - "consul:consul"
 
