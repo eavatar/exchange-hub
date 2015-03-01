@@ -18,6 +18,10 @@ class StatusResource(views.ResourceBase):
         resp.body = views.RESULT_OK
         resp.status = falcon.HTTP_200
 
+    def on_post(self, req, resp):
+        resp.body = views.RESULT_OK
+        resp.status = falcon.HTTP_200
+
 logger.debug("Binding routes for Status module...")
 # routes
 api.add_route("/.status", StatusResource())

@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import (absolute_import, division,
+                        print_function, unicode_literals)
 
 import json
 import requests
 from requests.auth import HTTPBasicAuth
-from .base import FunctionalTestCase
+from tests.functional.base import FunctionalTestCase
 
 
 class MessagesTest(FunctionalTestCase):
@@ -77,3 +78,40 @@ class MessagesTest(FunctionalTestCase):
         # print(data2)
         self.assertTrue(len(data2) > 0)
 
+    def test_can_dispatch_message(self):
+        label1 = 'a'
+        anchor_url = "%s/%s/anchors/%s" % (self.HTTP_URL, self.alice_xid, label1)
+        anchor = {
+            "label": label1,
+            "value": "http://4c397230.ngrok.com/.status"
+        }
+
+        data = json.dumps(anchor)
+
+        res1 = self.app.put(anchor_url,
+                            headers={'accept': self.JSON_CONTENT_TYPE, 'Content-Type': self.JSON_CONTENT_TYPE},
+                            data=data,
+                            auth=HTTPBasicAuth(self.alice_xid, self.alice_secret))
+        self.assertEqual(200, res1.status_code)
+
+        data = {
+            "headers": {
+                "Content-type": "text/plain",
+                "Content-length": 7,
+            },
+            "payload": "hello"
+        }
+
+        msgdata = json.dumps(data)
+
+        url = "%s/self/messages" % (self.HTTP_URL,)
+        res = self.app.post(url,
+                            headers={'content-type': 'application/json'},
+                            data=msgdata,
+                            auth=HTTPBasicAuth(self.alice_xid, self.alice_secret))
+        self.assertEqual(res.status_code, 200)
+
+        #res4 = self.app.delete(anchor_url,
+        #                       headers={'accept': self.JSON_CONTENT_TYPE},
+        #                       auth=HTTPBasicAuth(self.alice_xid, self.alice_secret))
+        #self.assertEqual(204, res4.status_code)

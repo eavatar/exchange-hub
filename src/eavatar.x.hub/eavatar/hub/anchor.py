@@ -84,8 +84,8 @@ class AnchorResource(object):
         resp.status = falcon.HTTP_204
 
 
-_manager = AnchorManager()
+manager = AnchorManager()
 
 # routes
-api.add_route("/{avatar_xid}/anchors", AnchorStore(_manager))
-api.add_route("/{avatar_xid}/anchors/{label}", AnchorResource(_manager))
+api.add_route("/{avatar_xid}/anchors", AnchorStore(manager))
+api.add_route("/{avatar_xid}/anchors/{label}", AnchorResource(manager))

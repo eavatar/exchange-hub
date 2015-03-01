@@ -6,7 +6,9 @@ Module for message manipulation.
 
 import json
 import uuid
+import requests
 import logging
+import gevent
 import falcon
 from cqlengine import columns
 from cqlengine.models import Model
@@ -14,12 +16,30 @@ from eavatar.hub.app import api
 from .hooks import check_authentication
 from eavatar.hub.views import ResourceBase
 from eavatar.hub.managers import BaseManager
+from eavatar.hub import anchor
 
 logger = logging.getLogger(__name__)
 
 
 def _new_msg_id():
     return bytes(uuid.uuid1())
+
+
+def _dispatch_message(avatar_xid, msg):
+    logger.debug("Dispatching message for %s", avatar_xid)
+    msgdata = msg.to_json()
+    logger.debug("Message: %s", msgdata)
+    anchors = anchor.manager.find(avatar_xid=avatar_xid)
+    logger.debug("Found %d anchor(s).", len(anchors))
+
+    for link in anchors:
+        url = link.value.strip()
+        try:
+            requests.post(url,
+                          headers={"Content-type": "application/json"},
+                          data=msgdata)
+        except requests.HTTPError:
+            logger.error("Failed to send message to %s", url, exc_info=True)
 
 
 class Message(Model):
@@ -102,17 +122,19 @@ class MessageStore(ResourceBase):
         headers['message_id'] = msg_id
         headers['from'] = client_xid
         headers['to'] = avatar_xid
-        Message.create(avatar_xid=avatar_xid,
-                       message_id=msg_id,
-                       headers=json.dumps(headers),
-                       payload=data.get('payload')
-                       )
+        msg = Message(avatar_xid=avatar_xid,
+                      message_id=msg_id,
+                      headers=json.dumps(headers),
+                      payload=data.get('payload')
+                      )
+        msg.save()
         resp.data = b'{"result": "ok", "message_id":"%s"}' % (msg_id,)
         resp.status = falcon.HTTP_200
+        gevent.spawn(_dispatch_message, avatar_xid, msg)
 
 logger.debug("Binding routes for Message module...")
 
-_manager = MessageManager()
+manager = MessageManager()
 
 # routes
-api.add_route("/{avatar_xid}/messages", MessageStore(_manager))
+api.add_route("/{avatar_xid}/messages", MessageStore(manager))
