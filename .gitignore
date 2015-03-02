@@ -71,3 +71,4 @@ downloads
 waf-*
 overlayfs.tar
 .idea
+docker-compose.yml

@@ -22,7 +22,7 @@ dependencies:
 test:
   override:
     - bin/py.test -vvv src/eavatar.x.hub/tests/unit/
-    - docker-compose up -d
+    - docker-compose -f docker-compose-ci.yml up -d
     - bin/py.test -vvv src/eavatar.x.hub/tests/integration/
     - bin/py.test -vvv src/eavatar.x.hub/tests/functional/
 
