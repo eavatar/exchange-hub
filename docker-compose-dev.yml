@@ -1,3 +1,7 @@
+#
+# Docker-compose file for my local development.
+# Change the advertised IP in consul container for your environment.
+#
 haproxy:
     image: eavatar/haproxy-consul
     ports:
@@ -31,7 +35,7 @@ cassandra:
 
 consul:
     image: eavatar/consul
-    command: "-server -bootstrap -ui-dir /ui -advertise 192.168.1.103"
+    command: "-server -bootstrap -ui-dir /ui -advertise 127.0.0.1"
     hostname: dockerhost
     ports:
     - "8400:8400"
