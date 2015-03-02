@@ -2,7 +2,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import requests
-from .base import FunctionalTestCase
+from tests.functional.base import FunctionalTestCase
 
 
 class WebFingerTest(FunctionalTestCase):

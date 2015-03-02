@@ -29,7 +29,7 @@ class FunctionalTestCase(unittest.TestCase):
     JSON_CONTENT_TYPE = 'application/json; charset=utf-8'
     JRD_CONTENT_TYPE = 'application/jrd+json'
 
-    HTTP_URL = 'http://127.0.0.1:5000'
+    HTTP_URL = 'http://127.0.0.1:8080'
     HTTPS_URL = 'https://127.0.0.1:8443'
 
     @classmethod
