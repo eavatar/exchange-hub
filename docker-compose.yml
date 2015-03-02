@@ -1,10 +1,11 @@
 haproxy:
-    image: eavatar/haproxy
+    image: eavatar/haproxy-consul
     ports:
     - "8080:80"
     - "8443:443"
     links:
-    - "hub:webapp"
+    - "consul:consul"
+#    - "hub:webapp"
 
 
 hub:
@@ -30,7 +31,7 @@ cassandra:
 
 consul:
     image: eavatar/consul
-    command: "-server -bootstrap"
+    command: "-server -bootstrap -ui-dir /ui -advertise 127.0.0.1"
     hostname: node1
     ports:
     - "8400:8400"
