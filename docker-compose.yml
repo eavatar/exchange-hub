@@ -31,7 +31,7 @@ cassandra:
 
 consul:
     image: eavatar/consul
-    command: "-server -bootstrap -ui-dir /ui -advertise 192.168.1.103"
+    command: "-server -bootstrap -advertise 127.0.0.1"
     hostname: node1
     ports:
     - "8400:8400"
