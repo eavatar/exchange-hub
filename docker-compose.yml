@@ -1,11 +1,10 @@
 haproxy:
-    image: eavatar/haproxy-consul
+    image: eavatar/haproxy
     ports:
     - "8080:80"
     - "8443:443"
     links:
-    - "consul:consul"
-#    - "hub:webapp"
+    - "hub:webapp"
 
 
 hub:
@@ -31,19 +30,10 @@ cassandra:
 
 consul:
     image: eavatar/consul
-    command: "-server -bootstrap -advertise 127.0.0.1"
+    command: "-server -bootstrap"
     hostname: node1
     ports:
     - "8400:8400"
     - "8500:8500"
     - "8600:53/udp"
-
-registrator:
-    image: gliderlabs/registrator
-    command: "consul://consul:8500"
-    hostname: dockerhost
-    volumes:
-    - "/var/run/docker.sock:/tmp/docker.sock"
-    links:
-    - "consul:consul"
 
