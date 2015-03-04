@@ -8,7 +8,7 @@ cffi==0.8.6
 coverage==3.7.1
 cqlengine==0.21.0
 cryptography==0.7.2
-falcon==0.2.0b2
+falcon==0.2
 futures==2.2.0
 gevent==1.0.1
 gevent-websocket==0.9.3
@@ -23,8 +23,7 @@ pyscrypt==1.6.1
 python-consul==0.3.6
 python-mimeparse==0.1.4
 pyzmq==14.5.0
-requests==2.5.1
+requests==2.4.3
 six==1.9.0
 time-uuid==0.1.1
 ujson==1.33
-wsgiref==0.1.2

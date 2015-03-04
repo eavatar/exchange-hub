@@ -50,6 +50,7 @@ from cqlengine import columns
 from cqlengine import connection
 from cqlengine import TimeUUID
 from cqlengine.models import Model
+from cqlengine.management import sync_table, create_keyspace
 
 import concurrent.futures
 
@@ -57,12 +58,11 @@ from Crypto.Hash import RIPEMD
 import libnacl.public
 import libnacl.secret
 
+# cryptography
+import cryptography
+
 # pyscrypt
 import pyscrypt
-
-# jwt
-import jwt
-from jwt.api import encode, decode, load, register_algorithm
 
 # app packages
 import eavatar.hub

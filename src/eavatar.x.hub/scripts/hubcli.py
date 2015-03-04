@@ -7,7 +7,7 @@ from cqlengine.management import sync_table, create_keyspace, delete_keyspace, d
 from eavatar.hub import avatar, message, anchor
 
 from cqlengine import connection
-from settings import KEYSPACE, DB_SERVERS
+from settings import KEYSPACE, DB_SERVERS, REPLICATION_FACTOR, STRATEGY_CLASS
 
 
 class HubCLI(object):
@@ -60,7 +60,9 @@ The most commonly used commands are:
         args = parser.parse_args(sys.argv[2:])
 
         connection.setup(DB_SERVERS, KEYSPACE)
-        create_keyspace(KEYSPACE, replication_factor=1, strategy_class='SimpleStrategy')
+        create_keyspace(KEYSPACE,
+                        replication_factor=REPLICATION_FACTOR,
+                        strategy_class=STRATEGY_CLASS)
 
     def remove_space(self):
         parser = argparse.ArgumentParser(

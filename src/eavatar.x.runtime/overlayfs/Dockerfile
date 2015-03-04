@@ -2,7 +2,7 @@ FROM eavatar/builder
 
 #ENV DEBIAN_FRONTEND noninteractive
 #RUN apt-get update
-#RUN apt-get install -y python2.7 openssl python-pip python-virtualenv
+#RUN apt-get install -y python2.7 openssl python-pip python-virtualenv libffi-dev
 
 RUN git clone https://github.com/pyinstaller/pyinstaller.git /tmp/pyinstdev
 
