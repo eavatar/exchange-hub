@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import os
 import unittest
 import requests
 import gevent
@@ -10,6 +11,10 @@ from cqlengine.management import sync_table, create_keyspace, delete_keyspace, d
 from eavatar.hub.main import Main
 from settings import KEYSPACE, DB_SERVERS
 from eavatar.hub import avatar, message, anchor
+
+
+def get_hub_url():
+    return os.environ.get("HUB_URL", 'http://127.0.0.1:8080')
 
 
 class FunctionalTestCase(unittest.TestCase):
@@ -29,12 +34,14 @@ class FunctionalTestCase(unittest.TestCase):
     JSON_CONTENT_TYPE = 'application/json; charset=utf-8'
     JRD_CONTENT_TYPE = 'application/jrd+json'
 
-    HTTP_URL = 'http://127.0.0.1:8080'
-    #HTTP_URL = "http://x-test.eavatar.net"
+    HTTP_URL = get_hub_url()
     HTTPS_URL = 'https://127.0.0.1:8443'
 
     @classmethod
     def setUpClass(cls):
+        if os.environ.get("HUB_NO_SETUP", None):
+            return
+
         FunctionalTestCase._launcher = Main()
         server_greenlet = gevent.spawn(FunctionalTestCase._launcher.run)
         connection.setup(DB_SERVERS, KEYSPACE)

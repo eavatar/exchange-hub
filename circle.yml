@@ -27,6 +27,11 @@ test:
     - bin/py.test -vvv src/eavatar.x.hub/tests/functional/
 
 deployment:
+  sandbox:
+    branch: develop
+    commands:
+      - curl -data "revision=$CIRCLE_SHA1" http://teamhub.eavatar.com:7080/deploy-sandbox
+
   hub:
     branch: master
     commands:
