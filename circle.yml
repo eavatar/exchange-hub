@@ -30,7 +30,7 @@ deployment:
   sandbox:
     branch: develop
     commands:
-      - curl -data "revision=$CIRCLE_SHA1" http://teamhub.eavatar.com:7080/deploy-sandbox
+      - curl --data "revision=$CIRCLE_SHA1" http://teamhub.eavatar.com:7080/deploy-sandbox
 
   hub:
     branch: master
