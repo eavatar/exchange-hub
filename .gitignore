@@ -72,3 +72,4 @@ waf-*
 overlayfs.tar
 .idea
 docker-compose.yml
+.DS_Store
